@@ -1,75 +1,49 @@
-import { Image, StyleSheet, Platform, View, Text } from 'react-native';
+import { View, Text, Image, Button } from 'react-native';
+import { Link } from 'expo-router';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
+export default function Welcome() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View className="flex-1 justify-between bg-white dark:bg-gray-900 px-6 py-10">
+      <View className="items-center mb-12">
+        <Image 
+          source={require('../../assets/images/icon.png')} 
+          className="w-24 h-24 mb-4"
         />
-      }>
-        <View className='bg-green-600'><Text className='text-4xl'> hello from nativewind</Text></View>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        
+      </View>
+      
+      <View>
+      <View><Text className="text-3xl font-bold text-center text-gray-800 dark:text-white">
+          Your Hobby Journey
+        </Text>
+        <Text className="text-xl text-center text-gray-600 dark:text-gray-300 mb-6">
+          made super easy
+        </Text>
+        </View>
+      <View className="w-full rounded-xl bg-blue-50 dark:bg-blue-900 p-6 mb-8">
+        <Text className="text-center text-gray-700 dark:text-gray-100 text-lg mb-2">
+          Hello, Hobby Explorer!
+        </Text>
+        <Text className="text-center text-gray-600 dark:text-gray-300">
+          Tell us a few details about what you want to learn.
+        </Text>
+      </View>
+      </View>
+      
+      <View>
+      <Link href="../onboarding/1" asChild>
+        <TouchableOpacity className="w-full bg-green-300 py-4 rounded-lg">
+          <Text className="text-white text-center font-semibold text-lg">
+            Continue
+          </Text>
+        </TouchableOpacity>
+      </Link>
+
+      <Text className="text-xs text-gray-500 dark:text-gray-400 mt-6 text-center">
+        By continuing, you agree to our Terms and Privacy Policy
+      </Text>
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
