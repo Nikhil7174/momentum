@@ -1,51 +1,41 @@
-import { View, Text, Image, Button } from 'react-native';
-import { Link } from 'expo-router';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useEffect, useState } from 'react';
+import { Redirect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, View } from 'react-native';
+import { STORAGE_KEYS } from '@/constants/Onboarding';
+import HomeScreen from '../home';
 
-export default function Welcome() {
-  return (
-    <View className="flex-1 justify-between bg-white dark:bg-gray-900 px-6 py-10">
-      <View className="items-center mb-12">
-        <Image 
-          source={require('../../assets/images/icon.png')} 
-          className="w-24 h-24 mb-4"
-        />
-        
+export default function Index() {  
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  
+  useEffect(() => {
+    async function checkOnboardingStatus() {
+      try {
+        const onboardingCompleted = await AsyncStorage.getItem(STORAGE_KEYS.onboardingCompleted);
+        setHasCompletedOnboarding(onboardingCompleted === 'true');
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        setHasCompletedOnboarding(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    checkOnboardingStatus();
+  }, []);
+  
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
-      
-      <View>
-      <View><Text className="text-3xl font-bold text-center text-gray-800 dark:text-white">
-          Your Hobby Journey
-        </Text>
-        <Text className="text-xl text-center text-gray-600 dark:text-gray-300 mb-6">
-          made super easy
-        </Text>
-        </View>
-      <View className="w-full rounded-xl bg-blue-50 dark:bg-blue-900 p-6 mb-8">
-        <Text className="text-center text-gray-700 dark:text-gray-100 text-lg mb-2">
-          Hello, Hobby Explorer!
-        </Text>
-        <Text className="text-center text-gray-600 dark:text-gray-300">
-          Tell us a few details about what you want to learn.
-        </Text>
-      </View>
-      </View>
-      
-      <View>
-      <Link href="../onboarding/1" asChild>
-        <TouchableOpacity className="w-full py-4 rounded-lg">
-          <View className='bg-green-900 rounded-xl py-4'>
-          <Text className="text-white text-center font-semibold text-lg">
-            Continue
-          </Text>
-          </View>
-        </TouchableOpacity>
-      </Link>
-
-      <Text className="text-xs text-gray-500 dark:text-gray-400 mt-6 text-center">
-        By continuing, you agree to our Terms and Privacy Policy
-      </Text>
-      </View>
-    </View>
-  );
+    );
+  }
+  
+  if (hasCompletedOnboarding) {
+    return <HomeScreen />;
+  } else {
+    return <Redirect href="/welcome" />;
+  }
 }
