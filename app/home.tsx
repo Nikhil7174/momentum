@@ -1,34 +1,61 @@
-import { View, Text, Image, ScrollView, BackHandler } from 'react-native';
+import { View, ScrollView, BackHandler, useColorScheme } from 'react-native';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { LABELS } from '@/constants/Onboarding';
-import { STORAGE_KEYS } from '@/constants/Onboarding';
+import { LABELS, STORAGE_KEYS } from '@/constants/Onboarding';
+
+import Header from '../components/home/Header';
+import WelcomeCard from '../components/home/WelcomeCard';
+import GoalsStatsCard from '../components/home/GoalsStatsCard';
+import ProgressChart from '../components/home/ProgressChart';
+import LearningPlan from '../components/home/LearningPlan';
+import ExploreSection from '../components/home/ExploreSection';
+import MotivationalQuote from '../components/home/MotivationalQuote';
+
+import { createTheme } from '../utils/themeUtils';
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
+  const theme = createTheme(isDarkMode);
+  
   const [userData, setUserData] = useState({
-    hobbyName: '',
-    currentSkillLevel: '',
-    desiredSkillLevel: '',
-    timeCommitment: '',
+    hobbyName: 'Coding',
+    currentSkillLevel: 'Beginner',
+    desiredSkillLevel: 'Advanced',
+    timeCommitment: '10 hours/week',
+    progress: 40, // Track user progress
   });
+  
+  const [techniques, setTechniques] = useState([
+    { id: '1', name: 'Technique 1', completed: false },
+    { id: '2', name: 'Technique 2', completed: false },
+    { id: '3', name: 'Technique 3', completed: true },
+    { id: '4', name: 'Technique 4', completed: false },
+    { id: '5', name: 'Technique 5', completed: true },
+  ]);
   
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const hobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName) || '';
-        const currentSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel) || '';
-        const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || '';
-        const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '';
+        const hobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName) || 'Coding';
+        const currentSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel) || 'Beginner';
+        const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || 'Advanced';
+        const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '10 hours/week';
+        const savedProgress = await AsyncStorage.getItem(STORAGE_KEYS.progress) || '40';
+        const savedTechniques = await AsyncStorage.getItem(STORAGE_KEYS.techniques);
         
         setUserData({
           hobbyName,
           currentSkillLevel,
           desiredSkillLevel,
           timeCommitment,
+          progress: parseInt(savedProgress, 10),
         });
         
-        // Mark onboarding as completed - just to make sure
+        if (savedTechniques) {
+          setTechniques(JSON.parse(savedTechniques));
+        }
+        
         await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
       } catch (error) {
         console.error('Failed to load user data:', error);
@@ -37,101 +64,62 @@ export default function HomeScreen() {
     
     loadUserData();
     
-    // Handle Android back button to exit app when pressed on home screen
+    // Handle Android back button
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      // This will exit the app when back button is pressed
       BackHandler.exitApp();
-      return true; // Prevents default behavior
+      return true;
     });
 
-    // Clean up the event listener when component unmounts
     return () => backHandler.remove();
   }, []);
-  
-  const getLevelText = (level: string) => {
-    return LABELS[level] || level;
+
+  const toggleTechniqueCompletion = async (id: string) => {
+    const updatedTechniques = techniques.map(technique => 
+      technique.id === id ? { ...technique, completed: !technique.completed } : technique
+    );
+    setTechniques(updatedTechniques);
+    
+    // Calculate progress
+    const completedCount = updatedTechniques.filter(t => t.completed).length;
+    const newProgress = Math.round((completedCount / updatedTechniques.length) * 100);
+    
+    setUserData(prev => ({
+      ...prev,
+      progress: newProgress
+    }));
+    
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.techniques, JSON.stringify(updatedTechniques));
+      await AsyncStorage.setItem(STORAGE_KEYS.progress, newProgress.toString());
+    } catch (error) {
+      console.error('Failed to save progress:', error);
+    }
   };
   
   return (
-    <ScrollView className="flex-1 bg-white dark:bg-gray-900">
-      <View className="p-6">
-        <View className="items-center mb-6">
-          <Image 
-            source={require('../assets/images/icon.png')} 
-            className="w-16 h-16"
-          />
-        </View>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
+
+      <Header theme={theme} isDarkMode={isDarkMode} />
+      
+      <ScrollView style={{ flex: 1 }}>
+
+        <WelcomeCard theme={theme} hobbyName={userData.hobbyName} />
         
-        <View className="bg-yellow-50 dark:bg-yellow-900 rounded-lg p-6 mb-6">
-          <View className="flex-row items-center mb-2">
-            <Image 
-              source={require('../assets/images/favicon.png')} 
-              className="w-10 h-10 rounded-full mr-3"
-            />
-            <Text className="text-lg font-bold text-gray-800 dark:text-white">
-              Hello, Hobbyist!
-            </Text>
-          </View>
-          
-          <Text className="text-gray-700 dark:text-gray-300">
-            Welcome to your {userData.hobbyName} learning journey! We've created a personalized path for you.
-          </Text>
-        </View>
+        <GoalsStatsCard theme={theme} userData={userData} />
         
-        <View className="mb-6">
-          <Text className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-            Your Learning Plan
-          </Text>
-          
-          <View className="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 mb-4">
-            <Text className="font-semibold text-lg mb-1 text-gray-800 dark:text-white">
-              Hobby:
-            </Text>
-            <Text className="text-gray-700 dark:text-gray-300">
-              {userData.hobbyName}
-            </Text>
-          </View>
-          
-          <View className="bg-green-50 dark:bg-green-900 rounded-lg p-4 mb-4">
-            <Text className="font-semibold text-lg mb-1 text-gray-800 dark:text-white">
-              Current Level:
-            </Text>
-            <Text className="text-gray-700 dark:text-gray-300">
-              {getLevelText(userData.currentSkillLevel)}
-            </Text>
-          </View>
-          
-          <View className="bg-purple-50 dark:bg-purple-900 rounded-lg p-4 mb-4">
-            <Text className="font-semibold text-lg mb-1 text-gray-800 dark:text-white">
-              Goal Level:
-            </Text>
-            <Text className="text-gray-700 dark:text-gray-300">
-              {getLevelText(userData.desiredSkillLevel)}
-            </Text>
-          </View>
-          
-          <View className="bg-orange-50 dark:bg-orange-900 rounded-lg p-4">
-            <Text className="font-semibold text-lg mb-1 text-gray-800 dark:text-white">
-              Time Commitment:
-            </Text>
-            <Text className="text-gray-700 dark:text-gray-300">
-              {getLevelText(userData.timeCommitment)}
-            </Text>
-          </View>
-        </View>
+        <ProgressChart theme={theme} userData={userData} />
         
-        <TouchableOpacity className="bg-blue-600 p-4 rounded-lg mb-6">
-          <Text className="text-white text-center font-semibold text-lg">
-            Start First Lesson
-          </Text>
-        </TouchableOpacity>
+        <LearningPlan 
+          theme={theme} 
+          techniques={techniques} 
+          toggleTechniqueCompletion={toggleTechniqueCompletion} 
+        />
         
-        <View className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-          <Text className="text-gray-600 dark:text-gray-400 italic text-center">
-            "Success is built on small efforts, repeated daily."
-          </Text>
-        </View>
-      </View>
-    </ScrollView>
+        <ExploreSection theme={theme} />
+        
+        <MotivationalQuote theme={theme} />
+
+      </ScrollView>
+    </View>
   );
 }

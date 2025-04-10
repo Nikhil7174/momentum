@@ -27,7 +27,9 @@ export const STORAGE_KEYS = {
   currentSkillLevel: 'currentSkillLevel',
   desiredSkillLevel: 'desiredSkillLevel',
   timeCommitment: 'timeCommitment',
-  onboardingCompleted: 'onboardingCompleted'
+  onboardingCompleted: 'onboardingCompleted',
+  techniques: 'techniques',
+  progress: 'progress'
 };
 
 export const LABELS: Record<string, string> = {
