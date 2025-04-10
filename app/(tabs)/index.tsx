@@ -33,10 +33,12 @@ export default function Welcome() {
       
       <View>
       <Link href="../onboarding/1" asChild>
-        <TouchableOpacity className="w-full bg-green-300 py-4 rounded-lg">
+        <TouchableOpacity className="w-full py-4 rounded-lg">
+          <View className='bg-green-900 rounded-xl py-4'>
           <Text className="text-white text-center font-semibold text-lg">
             Continue
           </Text>
+          </View>
         </TouchableOpacity>
       </Link>
 

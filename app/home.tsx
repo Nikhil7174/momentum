@@ -1,7 +1,9 @@
-import { View, Text, Image, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, BackHandler } from 'react-native';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { LABELS } from '@/constants/Onboarding';
+import { STORAGE_KEYS } from '@/constants/Onboarding';
 
 export default function HomeScreen() {
   const [userData, setUserData] = useState({
@@ -14,10 +16,10 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const hobbyName = await AsyncStorage.getItem('hobbyName') || '';
-        const currentSkillLevel = await AsyncStorage.getItem('currentSkillLevel') || '';
-        const desiredSkillLevel = await AsyncStorage.getItem('desiredSkillLevel') || '';
-        const timeCommitment = await AsyncStorage.getItem('timeCommitment') || '';
+        const hobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName) || '';
+        const currentSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel) || '';
+        const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || '';
+        const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '';
         
         setUserData({
           hobbyName,
@@ -25,30 +27,29 @@ export default function HomeScreen() {
           desiredSkillLevel,
           timeCommitment,
         });
+        
+        // Mark onboarding as completed - just to make sure
+        await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
       } catch (error) {
         console.error('Failed to load user data:', error);
       }
     };
     
     loadUserData();
+    
+    // Handle Android back button to exit app when pressed on home screen
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      // This will exit the app when back button is pressed
+      BackHandler.exitApp();
+      return true; // Prevents default behavior
+    });
+
+    // Clean up the event listener when component unmounts
+    return () => backHandler.remove();
   }, []);
   
   const getLevelText = (level: string) => {
-    const labels: Record<string, string> = {
-      'beginner': 'Complete Beginner',
-      'some_experience': 'Some Experience',
-      'intermediate': 'Intermediate',
-      'advanced': 'Advanced',
-      'basic': 'Basic Proficiency',
-      'hobby': 'Hobby Level',
-      'professional': 'Professional Level',
-      'casual': '1-2 hours per week',
-      'regular': '3-5 hours per week',
-      'dedicated': '5-10 hours per week',
-      'intense': '10+ hours per week',
-    };
-    
-    return labels[level] || level;
+    return LABELS[level] || level;
   };
   
   return (
@@ -119,7 +120,7 @@ export default function HomeScreen() {
           </View>
         </View>
         
-        <TouchableOpacity className="bg-blue-500 p-4 rounded-lg mb-6">
+        <TouchableOpacity className="bg-blue-600 p-4 rounded-lg mb-6">
           <Text className="text-white text-center font-semibold text-lg">
             Start First Lesson
           </Text>
