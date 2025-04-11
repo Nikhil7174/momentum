@@ -19,7 +19,6 @@ export default function RecentlyLearning({
 
     return (
         <>
-
             <View className="p-4 bg-white dark:bg-slate-800 rounded-xl mx-4 mt-2">
                 <Text className="text-2xl font-bold text-slate-800 dark:text-white">
                     Recently learning
@@ -34,10 +33,10 @@ export default function RecentlyLearning({
                                 )}/hqdefault.jpg`,
                             }}
                             resizeMode="cover"
-                            className="w-full h-full"
+                            className="w-full h-full rounded-2xl"
                         />
                     ) : (
-                        <View className="w-full h-full bg-gray-200 items-center justify-center">
+                        <View className="w-full rounded-2xl h-full bg-gray-200 items-center justify-center">
                             <Text className="text-6xl">📄</Text>
                         </View>
                     )}

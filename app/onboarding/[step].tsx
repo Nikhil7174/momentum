@@ -73,7 +73,7 @@ export default function OnboardingScreen() {
             if (currentStep < 4) {
                 router.push(`/onboarding/${currentStep + 1}`);
             } else {
-                router.replace('/home');
+                router.replace('/(tabs)');
             }
         } catch (error) {
             console.error('Error saving data:', error);
@@ -109,7 +109,7 @@ export default function OnboardingScreen() {
                         <TextInput
                             value={hobbyName}
                             onChangeText={setHobbyName}
-                            placeholder="e.g., Guitar, Pottery, Photography"
+                            placeholder="e.g., Guitar, Photography, Coding (Python)"
                             placeholderTextColor="#9CA3AF"
                             className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-lg p-4 mb-6"
                         />

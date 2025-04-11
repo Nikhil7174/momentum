@@ -10,7 +10,7 @@ interface Theme {
   success: string;
 }
 
-interface Technique {
+interface week {
   id: string;
   name: string;
   completed: boolean;
@@ -18,13 +18,13 @@ interface Technique {
 
 interface LearningPlanProps {
   theme: Theme;
-  techniques: Technique[];
-  toggleTechniqueCompletion: (id: string) => void;
+  weeks: week[];
+  toggleweekCompletion: (id: string) => void;
 }
 
-const LearningPlan: React.FC<LearningPlanProps> = ({ theme, techniques, toggleTechniqueCompletion }) => {
+const LearningPlan: React.FC<LearningPlanProps> = ({ theme, weeks, toggleweekCompletion }) => {
   return (
-    <View style={{ margin: 16, marginTop: 0 }}>
+    <View style={{ margin: 10, marginTop: 0 }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold', color: theme.text, marginBottom: 8 }}>
         Your Learning Plan
       </Text>
@@ -38,36 +38,36 @@ const LearningPlan: React.FC<LearningPlanProps> = ({ theme, techniques, toggleTe
         shadowRadius: 4,
         elevation: 3
       }}>
-        {techniques.map((technique, index) => (
+        {weeks.map((week, index) => (
           <TouchableOpacity 
-            key={technique.id}
+            key={week.id}
             style={{ 
               flexDirection: 'row', 
               alignItems: 'center', 
               justifyContent: 'space-between', 
               paddingVertical: 12,
               paddingHorizontal: 8,
-              borderBottomWidth: index < techniques.length - 1 ? 1 : 0,
+              borderBottomWidth: index < weeks.length - 1 ? 1 : 0,
               borderBottomColor: theme.border
             }}
-            onPress={() => toggleTechniqueCompletion(technique.id)}
+            onPress={() => toggleweekCompletion(week.id)}
           >
             <Text style={{ 
               fontSize: 16, 
-              color: technique.completed ? theme.inactive : theme.text,
-              textDecorationLine: technique.completed ? 'line-through' : 'none'
+              color: week.completed ? theme.inactive : theme.text,
+              textDecorationLine: week.completed ? 'line-through' : 'none'
             }}>
-              {technique.name}
+              {week.name}
             </Text>
             <View style={{ 
               width: 24, 
               height: 24, 
               borderRadius: 12, 
-              backgroundColor: technique.completed ? theme.success : theme.inactive,
+              backgroundColor: week.completed ? theme.success : theme.inactive,
               alignItems: 'center', 
               justifyContent: 'center' 
             }}>
-              {technique.completed && (
+              {week.completed && (
                 <Text style={{ color: 'white', fontSize: 14 }}>✓</Text>
               )}
             </View>

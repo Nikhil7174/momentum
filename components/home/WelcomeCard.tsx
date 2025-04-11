@@ -15,7 +15,7 @@ interface WelcomeCardProps {
 const WelcomeCard: React.FC<WelcomeCardProps> = ({ theme, hobbyName }) => {
   return (
     <View style={{ 
-      margin: 16, 
+      margin: 10, 
       backgroundColor: theme.card, 
       borderRadius: 16, 
       padding: 16,

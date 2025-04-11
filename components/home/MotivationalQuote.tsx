@@ -11,13 +11,13 @@ interface Theme {
 const MotivationalQuote = ({ theme }: { theme: Theme }) => {
   return (
     <View style={{ 
-      margin: 16, 
+      margin: 10, 
       padding: 16, 
       borderWidth: 1, 
       borderColor: theme.border, 
       borderRadius: 16,
       backgroundColor: theme.isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.01)',
-      marginBottom: 32
+      marginBottom: 72
     }}>
       <Text style={{ color: theme.subtext, fontStyle: 'italic', textAlign: 'center' }}>
         "Success is built on small efforts, repeated daily."

@@ -14,7 +14,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#297aff',
         tabBarInactiveTintColor: colorScheme === 'dark' ? '#8e8e93' : '#999999',
         headerShown: false,
         tabBarButton: HapticTab,
@@ -51,7 +51,7 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.3.fill" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -59,6 +59,13 @@ export default function TabLayout() {
         options={{
           title: 'Learning',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="studentdesk" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="progress"
+        options={{
+          title: 'Progress',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
         }}
       />
     </Tabs>

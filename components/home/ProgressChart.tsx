@@ -46,7 +46,7 @@ const ProgressChart: React.FC<{ theme: Theme; userData: UserData }> = ({ theme, 
   };
 
   return (
-    <View style={{ margin: 16, marginTop: 8 }}>
+    <View style={{ margin: 10, marginTop: 8 }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold', color: theme.text, marginBottom: 8 }}>
         Your Progress
       </Text>
@@ -60,11 +60,12 @@ const ProgressChart: React.FC<{ theme: Theme; userData: UserData }> = ({ theme, 
         shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
         shadowRadius: 4,
         elevation: 3,
-        marginBottom: 16
+        marginBottom: 16,
       }}>
         <LineChart
           data={progressData}
-          width={Dimensions.get('window').width - 48}
+          width={300}
+          // width={Dimensions.get('window').width - 48}
           height={220}
           chartConfig={{
             backgroundColor: theme.isDarkMode ? theme.card : '#ffffff',

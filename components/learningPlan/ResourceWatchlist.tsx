@@ -47,7 +47,7 @@ export default function ResourceWatchlist({
 
   return (
     <View className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden mx-4 my-2">
-      <View className="px-4 py-3 bg-slate-100 dark:bg-slate-700">
+      <View className="mx-4 bg-slate-100 dark:bg-slate-700">
         <View className="border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1">
           <Picker
             selectedValue={selectedWeek}
@@ -73,7 +73,7 @@ export default function ResourceWatchlist({
       
       <View className="flex-row">
         <TouchableOpacity 
-          className={`flex-1 py-3 items-center ${activeTab === 'videos' ? 'bg-[#8b5cf6]' : 'bg-[#c2abfd] dark:bg-purple-700'}`}
+          className={`flex-1 py-3 rounded-l-3xl ml-4 items-center ${activeTab === 'videos' ? 'bg-[#8b5cf6]' : 'bg-[#c2abfd] dark:bg-purple-700'}`}
           onPress={() => setActiveTab('videos')}
         >
           <Text className={`font-medium ${activeTab === 'videos' ? 'text-white' : 'text-purple-900 dark:text-purple-100'}`}>
@@ -82,7 +82,7 @@ export default function ResourceWatchlist({
         </TouchableOpacity>
         
         <TouchableOpacity 
-          className={`flex-1 py-3 items-center ${activeTab === 'description' ? 'bg-[#8b5cf6]' : 'bg-[#c2abfd] dark:bg-purple-700'}`}
+          className={`flex-1 py-3 rounded-r-3xl mr-4 items-center ${activeTab === 'description' ? 'bg-[#8b5cf6]' : 'bg-[#c2abfd] dark:bg-purple-700'}`}
           onPress={() => setActiveTab('description')}
         >
           <Text className={`font-medium ${activeTab === 'description' ? 'text-white' : 'text-purple-900 dark:text-purple-100'}`}>
@@ -125,7 +125,7 @@ export default function ResourceWatchlist({
               onPress={() => onResourceClick(article, 'article', selectedWeek)}
               className="flex-row items-center p-3 mb-2 bg-slate-50 dark:bg-slate-700 rounded-lg"
             >
-              <View className="w-10 h-10 mr-3 rounded-full bg-blue-500 items-center justify-center">
+              <View className="w-10 h-10 mr-3 rounded-full bg-[#8b5cf6] items-center justify-center">
                 <Ionicons name="document-text-outline" size={24} color="white" />
               </View>
               <Text className="flex-1 text-slate-800 dark:text-white">

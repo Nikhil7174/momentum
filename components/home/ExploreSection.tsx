@@ -14,7 +14,7 @@ const ExploreSection: React.FC<{ theme: Theme }> = ({ theme }) => {
   const router = useRouter();
 
   return (
-    <View style={{ margin: 16, marginTop: 8 }}>
+    <View style={{ margin: 10, marginTop: 8 }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold', color: theme.text, marginBottom: 8 }}>
         Explore Learning
       </Text>
