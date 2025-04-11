@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 interface Theme {
   text: string;
@@ -9,22 +10,27 @@ interface Theme {
 }
 
 const ExploreSection: React.FC<{ theme: Theme }> = ({ theme }) => {
+
+  const router = useRouter();
+
   return (
     <View style={{ margin: 16, marginTop: 8 }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold', color: theme.text, marginBottom: 8 }}>
         Explore Learning
       </Text>
-      <TouchableOpacity style={{ 
-        backgroundColor: theme.primary, 
-        borderRadius: 16, 
-        padding: 16, 
-        marginBottom: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
-        shadowRadius: 4,
-        elevation: 3
-      }}>
+      <TouchableOpacity
+        onPress={() => router.push('/learning')}
+        style={{
+          backgroundColor: theme.primary,
+          borderRadius: 16,
+          padding: 16,
+          marginBottom: 12,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
+          shadowRadius: 4,
+          elevation: 3
+        }}>
         <Text style={{ color: 'white', fontWeight: '600', fontSize: 16, marginBottom: 4 }}>
           Practice Techniques
         </Text>
@@ -32,17 +38,19 @@ const ExploreSection: React.FC<{ theme: Theme }> = ({ theme }) => {
           Master the fundamentals with guided exercises
         </Text>
       </TouchableOpacity>
-      
-      <TouchableOpacity style={{ 
-        backgroundColor: theme.secondary, 
-        borderRadius: 16, 
-        padding: 16,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
-        shadowRadius: 4,
-        elevation: 3
-      }}>
+
+      <TouchableOpacity
+        onPress={() => router.push('/learning')}
+        style={{
+          backgroundColor: theme.secondary,
+          borderRadius: 16,
+          padding: 16,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
+          shadowRadius: 4,
+          elevation: 3
+        }}>
         <Text style={{ color: 'white', fontWeight: '600', fontSize: 16, marginBottom: 4 }}>
           Learning Resources
         </Text>
