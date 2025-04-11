@@ -1,4 +1,4 @@
-export const createTheme = (isDarkMode) => {
+export const createTheme = (isDarkMode: boolean) => {
     return {
       isDarkMode,
       background: isDarkMode ? '#0f172a' : '#f8fafc',

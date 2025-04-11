@@ -19,21 +19,6 @@ export default function RecentlyLearning({
 
     return (
         <>
-            <TouchableOpacity
-                className="mx-4 my-2 p-4 bg-blue-100 dark:bg-blue-900 rounded-xl"
-                onPress={onResourceClick}
-            >
-                <Text className="text-sm text-blue-500 dark:text-blue-300 font-medium">
-                    Continue Learning
-                </Text>
-                <Text className="text-base text-slate-800 dark:text-white font-bold mt-1">
-                    {lastViewedResource.title}
-                </Text>
-                <Text className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-                    Week {lastViewedResource.weekIndex + 1} •{" "}
-                    {lastViewedResource.type === "video" ? "Video" : "Article"}
-                </Text>
-            </TouchableOpacity>
 
             <View className="p-4 bg-white dark:bg-slate-800 rounded-xl mx-4 mt-2">
                 <Text className="text-2xl font-bold text-slate-800 dark:text-white">
