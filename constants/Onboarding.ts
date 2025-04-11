@@ -1,4 +1,3 @@
-// constants.ts
 export const TOTAL_ONBOARDING_STEPS = 4;
 
 export const SKILL_LEVELS = [
@@ -29,7 +28,9 @@ export const STORAGE_KEYS = {
   timeCommitment: 'timeCommitment',
   onboardingCompleted: 'onboardingCompleted',
   techniques: 'techniques',
-  progress: 'progress'
+  progress: 'progress',
+  learningPlan: 'learningPlan',
+  lastViewedResource: 'lastViewedResource'
 };
 
 export const LABELS: Record<string, string> = {
