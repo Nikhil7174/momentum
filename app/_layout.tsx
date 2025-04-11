@@ -8,6 +8,7 @@ import { StyleSheet } from 'react-native'; // Import StyleSheet
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { UserStatsProvider } from '@/context/UserStatsContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 import "../global.css"
@@ -40,16 +41,18 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: 'slide_from_right', // or 'fade', 'simple_push', etc.
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
+        <UserStatsProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'slide_from_right', // or 'fade', 'simple_push', etc.
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </UserStatsProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
