@@ -31,15 +31,12 @@ export default function HomeScreen() {
     progress: 40, // Track user progress
   });
 
-  const [techniques, setTechniques] = useState([
-    { id: '1', name: 'Technique 1', completed: false },
-    { id: '2', name: 'Technique 2', completed: false },
-    { id: '3', name: 'Technique 3', completed: true },
-    { id: '4', name: 'Technique 4', completed: false },
-    { id: '5', name: 'Technique 5', completed: true },
+  const [weeks, setweeks] = useState([
+    { id: '1', name: 'week 1', completed: false },
+    { id: '2', name: 'week 2', completed: false },
+    { id: '3', name: 'week 3', completed: true },
+    { id: '4', name: 'week 4', completed: false },
   ]);
-
-
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -49,7 +46,7 @@ export default function HomeScreen() {
         const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || 'Advanced';
         const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '10 hours/week';
         const savedProgress = await AsyncStorage.getItem(STORAGE_KEYS.progress) || '40';
-        const savedTechniques = await AsyncStorage.getItem(STORAGE_KEYS.techniques);
+        const savedweeks = await AsyncStorage.getItem(STORAGE_KEYS.weeks);
 
         setUserData({
           hobbyName,
@@ -59,8 +56,8 @@ export default function HomeScreen() {
           progress: parseInt(savedProgress, 10),
         });
 
-        if (savedTechniques) {
-          setTechniques(JSON.parse(savedTechniques));
+        if (savedweeks) {
+          setweeks(JSON.parse(savedweeks));
         }
 
         await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
@@ -80,15 +77,15 @@ export default function HomeScreen() {
     return () => backHandler.remove();
   }, []);
 
-  const toggleTechniqueCompletion = async (id: string) => {
-    const updatedTechniques = techniques.map(technique =>
-      technique.id === id ? { ...technique, completed: !technique.completed } : technique
+  const toggleweekCompletion = async (id: string) => {
+    const updatedweeks = weeks.map(week =>
+      week.id === id ? { ...week, completed: !week.completed } : week
     );
-    setTechniques(updatedTechniques);
+    setweeks(updatedweeks);
 
     // Calculate progress
-    const completedCount = updatedTechniques.filter(t => t.completed).length;
-    const newProgress = Math.round((completedCount / updatedTechniques.length) * 100);
+    const completedCount = updatedweeks.filter(t => t.completed).length;
+    const newProgress = Math.round((completedCount / updatedweeks.length) * 100);
 
     setUserData(prev => ({
       ...prev,
@@ -96,7 +93,7 @@ export default function HomeScreen() {
     }));
 
     try {
-      await AsyncStorage.setItem(STORAGE_KEYS.techniques, JSON.stringify(updatedTechniques));
+      await AsyncStorage.setItem(STORAGE_KEYS.weeks, JSON.stringify(updatedweeks));
       await AsyncStorage.setItem(STORAGE_KEYS.progress, newProgress.toString());
     } catch (error) {
       console.error('Failed to save progress:', error);
@@ -113,7 +110,7 @@ export default function HomeScreen() {
           {/* Display Last Viewed Resource if available */}
           {lastViewedResource && (
             <TouchableOpacity
-              className="mx-4 my-2 p-4 bg-blue-100 dark:bg-blue-900 rounded-xl"
+              className="mx-[10px] my-2 p-4 bg-blue-100 dark:bg-blue-900 rounded-xl"
               onPress={() => {
                 router.push({
                   pathname: '/learning',
@@ -141,8 +138,8 @@ export default function HomeScreen() {
 
           <LearningPlan
             theme={theme}
-            techniques={techniques}
-            toggleTechniqueCompletion={toggleTechniqueCompletion}
+            weeks={weeks}
+            toggleweekCompletion={toggleweekCompletion}
           />
 
           <ExploreSection theme={theme} />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 interface HeaderProps {
   theme: { text: string };
@@ -13,26 +14,25 @@ const Header: React.FC<HeaderProps> = ({ theme, isDarkMode }) => {
       justifyContent: 'space-between', 
       alignItems: 'center', 
       padding: 16,
-      backgroundColor: isDarkMode ? '#1a2234' : '#e6effe'
+      backgroundColor: isDarkMode ? '#1a2234' : '#fff',
+      paddingTop: 30,
+      alignContent: 'center',
+      paddingBottom: 10
     }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {/* <a href="https://www.flaticon.com/free-icons/rocket" title="rocket icons">Rocket icons created by Freepik - Flaticon</a> */}
         <Image 
           source={require('../../assets/images/icon.png')} 
           style={{ width: 32, height: 32, borderRadius: 4 }}
         />
         <Text style={{ marginLeft: 8, fontSize: 18, fontWeight: 'bold', color: theme.text }}>
-          HobbyMaster
+          Momentum
         </Text>
       </View>
       <TouchableOpacity style={{ 
-        backgroundColor: isDarkMode ? '#334155' : '#dbeafe', 
-        padding: 8, 
         borderRadius: 20 
       }}>
-        <Image 
-          source={require('../../assets/images/favicon.png')} 
-          style={{ width: 24, height: 24, borderRadius: 12 }}
-        />
+        <Ionicons name="person-circle" size={35.5} color={isDarkMode ? "#fff" : "#000"} />
       </TouchableOpacity>
     </View>
   );

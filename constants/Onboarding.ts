@@ -27,7 +27,7 @@ export const STORAGE_KEYS = {
   desiredSkillLevel: 'desiredSkillLevel',
   timeCommitment: 'timeCommitment',
   onboardingCompleted: 'onboardingCompleted',
-  techniques: 'techniques',
+  weeks: 'weeks',
   progress: 'progress',
   learningPlan: 'learningPlan',
   lastViewedResource: 'lastViewedResource'
