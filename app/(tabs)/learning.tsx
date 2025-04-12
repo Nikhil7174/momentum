@@ -8,6 +8,7 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 import { Dimensions } from 'react-native';
 import axios from 'axios';
 import LottieView from 'lottie-react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 import Header from '@/components/home/Header';
 import MotivationalQuote from '@/components/home/MotivationalQuote';
@@ -26,6 +27,7 @@ export default function LearningScreen() {
   const theme = createTheme(isDarkMode);
 
   const { updateLastViewedResource } = useUserStats();
+  const { openResource } = useLocalSearchParams();
 
   const [userData, setUserData] = useState({
     hobbyName: 'Coding',
@@ -51,6 +53,8 @@ export default function LearningScreen() {
   const [articleModalVisible, setArticleModalVisible] = useState(false);
   const [currentArticleUrl, setCurrentArticleUrl] = useState('');
   const [currentArticleTitle, setCurrentArticleTitle] = useState('');
+
+  const [currentResourceTitle, setCurrentResourceTitle] = useState('');
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -103,14 +107,39 @@ export default function LearningScreen() {
     return () => backHandler.remove();
   }, []);
 
+  useEffect(() => {
+    if (openResource) {
+      try {
+        const resource = JSON.parse(openResource as string);
+        setCurrentResourceTitle(resource.title);
+        // Check type to decide how to open it:
+        if (resource.type === 'video') {
+          const videoId = getYoutubeVideoId(resource.url);
+          if (videoId) {
+            setCurrentVideoId(videoId);
+            setVideoModalVisible(true);
+          } else {
+            Linking.openURL(resource.url);
+          }
+        } else if (resource.type === 'article') {
+          setCurrentArticleUrl(resource.url);
+          setArticleModalVisible(true);
+        }
+      } catch (error) {
+        console.error('Error parsing openResource parameter:', error);
+      }
+    }
+  }, [openResource]);
+
   const extractValidJSON = (text: string): string => {
     // First try to find JSON code block
     const codeBlockMatch = text.match(/```json\n([\s\S]*?)```/);
     if (codeBlockMatch) return codeBlockMatch[1].trim();
   
-    // Fallback to text before Rationale section
-    const [jsonPart] = text.split('\n\nRationale:\n\n');
-    return jsonPart.trim();
+    // Fallback to text before Explanation section and remove Processing JSON prefix
+    const [jsonWithPrefix] = text.split('\n\nExplanation:\n\n');
+    const jsonString = jsonWithPrefix.replace(/^Processing JSON:\s*/i, '').trim();
+    return jsonString;
   };
 
   const fetchLearningPlan = async (
@@ -134,12 +163,14 @@ export default function LearningScreen() {
         }
       }
   
-      const response = await axios.post('https://momentum-backend-server.onrender.com/generate-personalized-learning', {
+      const response = await axios.post('https://momentum-backend-server-1.onrender.com/generate-personalized-learning', {
         hobbyName,
         currentSkillLevel,
         desiredSkillLevel,
         timeCommitment
       });
+
+      console.log("response -> ", response)
   
       const fullText = response.data.content[0].text;
       const jsonString = extractValidJSON(fullText);
@@ -147,7 +178,7 @@ export default function LearningScreen() {
       console.log('Processing JSON:', jsonString); // Debug log
   
       const planData = JSON.parse(jsonString);
-      
+      console.log("hiiiiiiiiiiiiiii")
       if (planData?.weeks) {
         setLearningPlan(planData);
         await AsyncStorage.setItem(STORAGE_KEYS.learningPlan,
@@ -236,6 +267,7 @@ export default function LearningScreen() {
         <RecentlyLearning
           lastViewedResource={lastViewedResource}
           onResourceClick={handleLastResourceClick}
+          isDarkMode={isDarkMode}
         />
 
         <WeeklyCourse

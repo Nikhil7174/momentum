@@ -27,16 +27,32 @@ export default function ResourceWatchlist({
 
   if (isLoading) {
     return (
-      <View className="p-4 bg-white dark:bg-slate-800 rounded-xl mx-4">
-        <Text className="text-slate-600 dark:text-slate-300">Loading your personalized learning plan...</Text>
+      <View style={{
+        padding: 16,
+        backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+        borderRadius: 12,
+        marginHorizontal: 16
+      }}>
+        <Text style={{
+          color: isDarkMode ? '#cbd5e1' : '#64748b'
+        }}>
+          Loading your personalized learning plan...
+        </Text>
       </View>
     );
   }
 
   if (!learningPlan || learningPlan.weeks.length === 0) {
     return (
-      <View className="p-4 bg-white dark:bg-slate-800 rounded-xl mx-4">
-        <Text className="text-slate-600 dark:text-slate-300">
+      <View style={{
+        padding: 16,
+        backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+        borderRadius: 12,
+        marginHorizontal: 16
+      }}>
+        <Text style={{
+          color: isDarkMode ? '#cbd5e1' : '#64748b'
+        }}>
           No learning plan found. Please check your connection and try again.
         </Text>
       </View>
@@ -46,14 +62,29 @@ export default function ResourceWatchlist({
   const currentWeek = learningPlan.weeks[selectedWeek];
 
   return (
-    <View className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden mx-4 my-2">
-      <View className="mx-4 bg-slate-100 dark:bg-slate-700">
-        <View className="border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1">
+    <View style={{
+      backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+      borderRadius: 12,
+      overflow: 'hidden',
+      marginHorizontal: 16,
+      marginVertical: 8
+    }}>
+      <View style={{
+        marginHorizontal: 16,
+        backgroundColor: isDarkMode ? '#334155' : '#f1f5f9'
+      }}>
+        <View style={{
+          borderWidth: 1,
+          borderColor: isDarkMode ? '#475569' : '#cbd5e1',
+          borderRadius: 8,
+          paddingHorizontal: 8,
+          paddingVertical: 4
+        }}>
           <Picker
             selectedValue={selectedWeek}
             onValueChange={(itemValue: number) => setSelectedWeek(itemValue)}
-            style={{ color: isDarkMode ? '#fff' : '#333' }}
-            dropdownIconColor={isDarkMode ? '#fff' : '#333'}
+            style={{ color: isDarkMode ? '#ffffff' : '#333333' }}
+            dropdownIconColor={isDarkMode ? '#ffffff' : '#333333'}
           >
             {learningPlan.weeks.map((_, index) => (
               <Picker.Item key={index} label={`Week ${index + 1}`} value={index} />
@@ -62,52 +93,103 @@ export default function ResourceWatchlist({
         </View>
       </View>
       
-      <View className="p-4">
-        <Text className="text-2xl font-bold text-slate-800 dark:text-white">
+      <View style={{ padding: 16 }}>
+        <Text style={{
+          fontSize: 24,
+          fontWeight: 'bold',
+          color: isDarkMode ? '#ffffff' : '#1e293b'
+        }}>
           Personalized {hobbyName} Course - Week {selectedWeek + 1}
         </Text>
-        <Text className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+        <Text style={{
+          fontSize: 14,
+          color: isDarkMode ? '#cbd5e1' : '#64748b',
+          marginTop: 4
+        }}>
           {currentWeek.youtubeVideos.length} Videos • {currentWeek.learningArticles.length} Articles
         </Text>
       </View>
       
-      <View className="flex-row">
-        <TouchableOpacity 
-          className={`flex-1 py-3 rounded-l-3xl ml-4 items-center ${activeTab === 'videos' ? 'bg-[#8b5cf6]' : 'bg-[#c2abfd] dark:bg-purple-700'}`}
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            paddingVertical: 12,
+            borderTopLeftRadius: 24,
+            borderBottomLeftRadius: 24,
+            marginLeft: 16,
+            alignItems: 'center',
+            backgroundColor: activeTab === 'videos' ? '#8b5cf6' : isDarkMode ? '#7e22ce' : '#c2abfd'
+          }}
           onPress={() => setActiveTab('videos')}
         >
-          <Text className={`font-medium ${activeTab === 'videos' ? 'text-white' : 'text-purple-900 dark:text-purple-100'}`}>
+          <Text style={{
+            fontWeight: '500',
+            color: activeTab === 'videos' ? '#ffffff' : isDarkMode ? '#f3e8ff' : '#581c87'
+          }}>
             Videos
           </Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
-          className={`flex-1 py-3 rounded-r-3xl mr-4 items-center ${activeTab === 'description' ? 'bg-[#8b5cf6]' : 'bg-[#c2abfd] dark:bg-purple-700'}`}
+          style={{
+            flex: 1,
+            paddingVertical: 12,
+            borderTopRightRadius: 24,
+            borderBottomRightRadius: 24,
+            marginRight: 16,
+            alignItems: 'center',
+            backgroundColor: activeTab === 'description' ? '#8b5cf6' : isDarkMode ? '#7e22ce' : '#c2abfd'
+          }}
           onPress={() => setActiveTab('description')}
         >
-          <Text className={`font-medium ${activeTab === 'description' ? 'text-white' : 'text-purple-900 dark:text-purple-100'}`}>
+          <Text style={{
+            fontWeight: '500',
+            color: activeTab === 'description' ? '#ffffff' : isDarkMode ? '#f3e8ff' : '#581c87'
+          }}>
             Articles
           </Text>
         </TouchableOpacity>
       </View>
       
       {activeTab === 'videos' && (
-        <View className="p-4">
+        <View style={{ padding: 16 }}>
           {currentWeek.youtubeVideos.map((video, index) => (
             <TouchableOpacity 
               key={`video-${index}`}
               onPress={() => onResourceClick(video, 'video', selectedWeek)}
-              className="flex-row items-center p-3 mb-2 bg-slate-50 dark:bg-slate-700 rounded-lg"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: isDarkMode ? '#334155' : '#f8fafc',
+                borderRadius: 8
+              }}
             >
-              <View className="w-10 h-10 mr-3 rounded-full bg-[#8b5cf6] items-center justify-center">
+              <View style={{
+                width: 40,
+                height: 40,
+                marginRight: 12,
+                borderRadius: 20,
+                backgroundColor: '#8b5cf6',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
                 <Ionicons name="play-circle" size={24} color="white" />
               </View>
-              <View className="flex-1">
-                <Text className="text-slate-800 dark:text-white">
+              <View style={{ flex: 1 }}>
+                <Text style={{
+                  color: isDarkMode ? '#ffffff' : '#1e293b'
+                }}>
                   {video.title}
                 </Text>
                 {video.duration && (
-                  <Text className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  <Text style={{
+                    fontSize: 12,
+                    color: isDarkMode ? '#94a3b8' : '#64748b',
+                    marginTop: 4
+                  }}>
                     {video.duration}
                   </Text>
                 )}
@@ -118,17 +200,35 @@ export default function ResourceWatchlist({
       )}
       
       {activeTab === 'description' && (
-        <View className="p-4">
+        <View style={{ padding: 16 }}>
           {currentWeek.learningArticles.map((article, index) => (
             <TouchableOpacity 
               key={`article-${index}`}
               onPress={() => onResourceClick(article, 'article', selectedWeek)}
-              className="flex-row items-center p-3 mb-2 bg-slate-50 dark:bg-slate-700 rounded-lg"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: isDarkMode ? '#334155' : '#f8fafc',
+                borderRadius: 8
+              }}
             >
-              <View className="w-10 h-10 mr-3 rounded-full bg-[#8b5cf6] items-center justify-center">
+              <View style={{
+                width: 40,
+                height: 40,
+                marginRight: 12,
+                borderRadius: 20,
+                backgroundColor: '#8b5cf6',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
                 <Ionicons name="document-text-outline" size={24} color="white" />
               </View>
-              <Text className="flex-1 text-slate-800 dark:text-white">
+              <Text style={{
+                flex: 1,
+                color: isDarkMode ? '#ffffff' : '#1e293b'
+              }}>
                 {article.title}
               </Text>
             </TouchableOpacity>

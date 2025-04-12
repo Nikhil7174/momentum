@@ -32,7 +32,7 @@ const GoalsStatsCard: React.FC<{ theme: Theme; userData: UserData }> = ({ theme,
   const daysToGoal = calculateEstimatedTimeToGoal();
 
   return (
-    <View style={{ margin: 10, marginTop: 0 }}>
+    <View style={{ margin: 10, marginTop: 10 }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold', color: theme.text, marginBottom: 8 }}>
         Your Goals & Stats
       </Text>

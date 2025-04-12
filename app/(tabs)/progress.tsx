@@ -16,19 +16,19 @@ const ProgressScreen: React.FC = () => {
 
   const { userData, weeks, toggleWeekCompletion } = useUserStats();
 
-  useEffect(() => {
-    // Optionally handle Android back button for your progress screen
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      BackHandler.exitApp();
-      return true;
-    });
-    return () => backHandler.remove();
-  }, []);
+  // useEffect(() => {
+  //   // Optionally handle Android back button for your progress screen
+  //   const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+  //     BackHandler.exitApp();
+  //     return true;
+  //   });
+  //   return () => backHandler.remove();
+  // }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <Header theme={theme} isDarkMode={isDarkMode} />
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1, paddingTop: 15, paddingHorizontal:10 }}>
         <GoalsStatsCard theme={theme} userData={userData} />
         <ProgressChart theme={theme} userData={userData} />
         <LearningPlan
