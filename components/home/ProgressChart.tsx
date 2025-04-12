@@ -16,14 +16,21 @@ interface UserData {
 }
 
 const ProgressChart: React.FC<{ theme: Theme; userData: UserData }> = ({ theme, userData }) => {
-  // Enhanced data for the progress chart with weekly milestones
-  const currentProgress = userData.progress;
-  const weeklySplit = currentProgress ? [
-    Math.max(10, currentProgress * 0.25), 
-    Math.max(20, currentProgress * 0.5), 
-    Math.max(30, currentProgress * 0.75), 
+  const currentProgress = userData.progress; 
+  // If currentProgress is 0, we set weekly progress to zero
+  const weeklySplit = currentProgress > 0 ? [
+    Math.round(currentProgress * 0.25), 
+    Math.round(currentProgress * 0.5), 
+    Math.round(currentProgress * 0.75), 
     currentProgress
-  ] : [10, 20, 30, 40];
+  ] : [0, 0, 0, 0];
+
+  const targetData = [
+    Math.round((7 / 28) * 100),
+    Math.round((14 / 28) * 100),
+    Math.round((21 / 28) * 100),
+    100
+  ];
   
   // Data for the progress chart
   const progressData = {
@@ -34,11 +41,11 @@ const ProgressChart: React.FC<{ theme: Theme; userData: UserData }> = ({ theme, 
         color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`, // Primary blue
         strokeWidth: 2
       },
-      // Target line dataset
+      // Target line dataset using the 7-day gap calculation based on 25 days
       {
-        data: [25, 50, 75, 100],
-        color: (opacity = 1) => `rgba(234, 179, 8, ${opacity * 0.6})`, // Gold target line
-        strokeWidth: 1,
+        data: targetData,
+        color: (opacity = 1) => `rgba(234, 179, 8, ${opacity})`, // Gold target line
+        strokeWidth: 2,
         withDots: false,
       }
     ],
@@ -65,7 +72,6 @@ const ProgressChart: React.FC<{ theme: Theme; userData: UserData }> = ({ theme, 
         <LineChart
           data={progressData}
           width={300}
-          // width={Dimensions.get('window').width - 48}
           height={220}
           chartConfig={{
             backgroundColor: theme.isDarkMode ? theme.card : '#ffffff',
