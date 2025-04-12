@@ -34,7 +34,7 @@ export default function HomeScreen() {
   const [weeks, setweeks] = useState([
     { id: '1', name: 'week 1', completed: false },
     { id: '2', name: 'week 2', completed: false },
-    { id: '3', name: 'week 3', completed: true },
+    { id: '3', name: 'week 3', completed: false },
     { id: '4', name: 'week 4', completed: false },
   ]);
 
