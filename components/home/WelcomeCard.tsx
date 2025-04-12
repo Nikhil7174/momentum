@@ -39,7 +39,7 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ theme, hobbyName }) => {
         </View>
         <View>
           <Text style={{ fontSize: 18, fontWeight: 'bold', color: theme.text }}>
-            Hey, Hobbyist!
+            Hey, Explorer!
           </Text>
           <Text style={{ color: theme.subtext }}>
             Welcome to your {hobbyName} journey.
