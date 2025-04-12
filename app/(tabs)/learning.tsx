@@ -7,6 +7,7 @@ import { WebView } from 'react-native-webview';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { Dimensions } from 'react-native';
 import axios from 'axios';
+import LottieView from 'lottie-react-native';
 
 import Header from '@/components/home/Header';
 import MotivationalQuote from '@/components/home/MotivationalQuote';
@@ -102,6 +103,16 @@ export default function LearningScreen() {
     return () => backHandler.remove();
   }, []);
 
+  const extractValidJSON = (text: string): string => {
+    // First try to find JSON code block
+    const codeBlockMatch = text.match(/```json\n([\s\S]*?)```/);
+    if (codeBlockMatch) return codeBlockMatch[1].trim();
+  
+    // Fallback to text before Rationale section
+    const [jsonPart] = text.split('\n\nRationale:\n\n');
+    return jsonPart.trim();
+  };
+
   const fetchLearningPlan = async (
     hobbyName: string,
     currentSkillLevel: string,
@@ -110,46 +121,51 @@ export default function LearningScreen() {
   ) => {
     try {
       const storedPlan = await AsyncStorage.getItem(STORAGE_KEYS.learningPlan);
-
       if (storedPlan) {
         const parsedPlan = JSON.parse(storedPlan);
-        // Extract only the JSON portion before "Explanation:"
-        const jsonString = parsedPlan.content[0].text.split('\n\nExplanation:\n\n')[0];
-        const actualPlan = JSON.parse(jsonString);
-        setLearningPlan(actualPlan);
-        setIsLoading(false);
-        return;
+        try {
+          const planData = JSON.parse(parsedPlan.content[0].text);
+          setLearningPlan(planData);
+          setIsLoading(false);
+          return;
+        } catch (e) {
+          console.error('Corrupted stored plan:', e);
+          await AsyncStorage.removeItem(STORAGE_KEYS.learningPlan);
+        }
       }
-
+  
       const response = await axios.post('https://momentum-backend-server.onrender.com/generate-personalized-learning', {
         hobbyName,
         currentSkillLevel,
         desiredSkillLevel,
         timeCommitment
       });
-
-      // Split response to get only the JSON portion
+  
       const fullText = response.data.content[0].text;
-      const jsonString = fullText.split('\n\nExplanation:\n\n')[0];
+      const jsonString = extractValidJSON(fullText);
+  
+      console.log('Processing JSON:', jsonString); // Debug log
+  
       const planData = JSON.parse(jsonString);
-
-      if (planData) {
+      
+      if (planData?.weeks) {
         setLearningPlan(planData);
-        // Store only the JSON portion for future use
         await AsyncStorage.setItem(STORAGE_KEYS.learningPlan,
           JSON.stringify({
-            content: [{
-              text: jsonString
-            }]
+            content: [{ text: jsonString }],
+            timestamp: new Date().toISOString()
           })
         );
+      } else {
+        throw new Error('Invalid learning plan structure');
       }
     } catch (error) {
-      console.error('Failed to fetch learning plan:', error);
+      console.error('Failed to process learning plan:', { error });
+      throw new Error('Failed to load learning plan. Please try again later.');
     } finally {
       setIsLoading(false);
     }
-  };
+  };  
 
   const handleResourceClick = async (resource: ResourceItem, type: 'video' | 'article', weekIndex: number) => {
     const resourceData = {
@@ -196,6 +212,22 @@ export default function LearningScreen() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+        <LottieView
+          source={require('../../assets/animations/loading.json')}
+          autoPlay
+          loop
+          style={{ width: 200, height: 200 }}
+        />
+        <Text className='font-semibold text-xl justify-center items-center text-center'>
+        Creating personalized learning plan for you ...
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-slate-50 dark:bg-slate-900 mb-[6vh]">
       <Header theme={theme} isDarkMode={isDarkMode} />
@@ -215,7 +247,6 @@ export default function LearningScreen() {
           hobbyName={userData.hobbyName}
           isDarkMode={isDarkMode}
         />
-
       </ScrollView>
 
       <Modal
