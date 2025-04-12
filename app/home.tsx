@@ -1,14 +1,10 @@
 import { View, ScrollView, BackHandler, useColorScheme, Text, TouchableOpacity } from 'react-native';
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LABELS, STORAGE_KEYS } from '@/constants/Onboarding';
-import { Redirect, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { useRouter } from 'expo-router';
 
 import Header from '../components/home/Header';
 import WelcomeCard from '../components/home/WelcomeCard';
 import GoalsStatsCard from '../components/home/GoalsStatsCard';
-import ProgressChart from '../components/home/ProgressChart';
-import LearningPlan from '../components/home/LearningPlan';
 import ExploreSection from '../components/home/ExploreSection';
 import MotivationalQuote from '../components/home/MotivationalQuote';
 import { useUserStats } from '@/context/UserStatsContext';
@@ -20,54 +16,9 @@ export default function HomeScreen() {
   const theme = createTheme(isDarkMode);
   const router = useRouter();
 
-  const { lastViewedResource } = useUserStats();
-
-
-  const [userData, setUserData] = useState({
-    hobbyName: 'Coding',
-    currentSkillLevel: 'Beginner',
-    desiredSkillLevel: 'Advanced',
-    timeCommitment: '10 hours/week',
-    progress: 40, // Track user progress
-  });
-
-  const [weeks, setweeks] = useState([
-    { id: '1', name: 'week 1', completed: false },
-    { id: '2', name: 'week 2', completed: false },
-    { id: '3', name: 'week 3', completed: false },
-    { id: '4', name: 'week 4', completed: false },
-  ]);
+  const { userData, lastViewedResource } = useUserStats();
 
   useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const hobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName) || 'Coding';
-        const currentSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel) || 'Beginner';
-        const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || 'Advanced';
-        const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '10 hours/week';
-        const savedProgress = await AsyncStorage.getItem(STORAGE_KEYS.progress) || '40';
-        const savedweeks = await AsyncStorage.getItem(STORAGE_KEYS.weeks);
-
-        setUserData({
-          hobbyName,
-          currentSkillLevel,
-          desiredSkillLevel,
-          timeCommitment,
-          progress: parseInt(savedProgress, 10),
-        });
-
-        if (savedweeks) {
-          setweeks(JSON.parse(savedweeks));
-        }
-
-        await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
-      } catch (error) {
-        console.error('Failed to load user data:', error);
-      }
-    };
-
-    loadUserData();
-
     // Handle Android back button
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       BackHandler.exitApp();
@@ -77,32 +28,8 @@ export default function HomeScreen() {
     return () => backHandler.remove();
   }, []);
 
-  const toggleweekCompletion = async (id: string) => {
-    const updatedweeks = weeks.map(week =>
-      week.id === id ? { ...week, completed: !week.completed } : week
-    );
-    setweeks(updatedweeks);
-
-    // Calculate progress
-    const completedCount = updatedweeks.filter(t => t.completed).length;
-    const newProgress = Math.round((completedCount / updatedweeks.length) * 100);
-
-    setUserData(prev => ({
-      ...prev,
-      progress: newProgress
-    }));
-
-    try {
-      await AsyncStorage.setItem(STORAGE_KEYS.weeks, JSON.stringify(updatedweeks));
-      await AsyncStorage.setItem(STORAGE_KEYS.progress, newProgress.toString());
-    } catch (error) {
-      console.error('Failed to save progress:', error);
-    }
-  };
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-
       <Header theme={theme} isDarkMode={isDarkMode} />
 
       <ScrollView style={{ flex: 1 }}>
@@ -134,13 +61,18 @@ export default function HomeScreen() {
 
           <GoalsStatsCard theme={theme} userData={userData} />
 
-          <ProgressChart theme={theme} userData={userData} />
-
-          <LearningPlan
-            theme={theme}
-            weeks={weeks}
-            toggleweekCompletion={toggleweekCompletion}
-          />
+          <TouchableOpacity
+            onPress={() => router.push('/progress')}
+            style={{
+              backgroundColor: theme.primary,
+              padding: 12,
+              borderRadius: 8,
+              marginVertical: 10,
+              alignItems: 'center'
+            }}
+          >
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Track Your Progress</Text>
+          </TouchableOpacity>
 
           <ExploreSection theme={theme} />
         </View>

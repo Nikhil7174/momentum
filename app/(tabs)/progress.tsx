@@ -1,38 +1,45 @@
-// import React from 'react';
-// import { View, ScrollView } from 'react-native';
-// import GoalsStatsCard from '../components/home/GoalsStatsCard';
-// import ProgressChart from '../components/home/ProgressChart';
-// import Header from '../components/home/Header';
-// import { useColorScheme } from 'react-native';
-// import { createTheme } from '../utils/themeUtils';
-// import { useUserStats } from '@/context/UserStatsContext';
+import React, { useEffect } from 'react';
+import { View, ScrollView, BackHandler } from 'react-native';
+import { useColorScheme } from 'react-native';
+import { createTheme } from '../../utils/themeUtils';
+import Header from '../../components/home/Header';
+import GoalsStatsCard from '../../components/home/GoalsStatsCard';
+import ProgressChart from '../../components/home/ProgressChart';
+import LearningPlan from '../../components/home/LearningPlan';
+import MotivationalQuote from '../../components/home/MotivationalQuote';
+import { useUserStats } from '@/context/UserStatsContext';
 
-// export default function ProgressScreen() {
-//   const colorScheme = useColorScheme();
-//   const isDarkMode = colorScheme === 'dark';
-//   const theme = createTheme(isDarkMode);
-//   const { lastViewedResource } = useUserStats();
+const ProgressScreen: React.FC = () => {
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
+  const theme = createTheme(isDarkMode);
 
-//   return (
-//     <View style={{ flex: 1, backgroundColor: theme.background }}>
-//       <Header theme={theme} isDarkMode={isDarkMode} />
-//       <ScrollView style={{ flex: 1, padding: 16 }}>
-//         <GoalsStatsCard theme={theme} userData={userData} />
-//         <ProgressChart theme={theme} userData={userData} />
-//       </ScrollView>
-//     </View>
-//   );
-// }
+  const { userData, weeks, toggleWeekCompletion } = useUserStats();
 
-import { View, Text } from 'react-native'
-import React from 'react'
+  useEffect(() => {
+    // Optionally handle Android back button for your progress screen
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      BackHandler.exitApp();
+      return true;
+    });
+    return () => backHandler.remove();
+  }, []);
 
-const progress = () => {
   return (
-    <View>
-      <Text>progress</Text>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
+      <Header theme={theme} isDarkMode={isDarkMode} />
+      <ScrollView style={{ flex: 1 }}>
+        <GoalsStatsCard theme={theme} userData={userData} />
+        <ProgressChart theme={theme} userData={userData} />
+        <LearningPlan
+          theme={theme}
+          weeks={weeks}
+          toggleweekCompletion={toggleWeekCompletion}
+        />
+        <MotivationalQuote theme={theme} />
+      </ScrollView>
     </View>
-  )
-}
+  );
+};
 
-export default progress
+export default ProgressScreen;
