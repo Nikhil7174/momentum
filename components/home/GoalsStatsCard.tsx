@@ -23,9 +23,7 @@ const GoalsStatsCard: React.FC<{ theme: Theme; userData: UserData }> = ({ theme,
     const progressPercentage = userData.progress / 100;
     const remainingPercentage = 1 - progressPercentage;
     
-    // Rough estimation based on time commitment
-    const hoursPerWeek = parseInt(userData.timeCommitment.split(' ')[0]) || 10;
-    const totalWeeksEstimated = 12; // Baseline assumption for mastery
+    const totalWeeksEstimated = 4;
     const remainingWeeks = Math.ceil(totalWeeksEstimated * remainingPercentage);
     
     return remainingWeeks * 7; // days to goal
