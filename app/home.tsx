@@ -1,4 +1,4 @@
-import { View, ScrollView, BackHandler, useColorScheme, Text, TouchableOpacity } from 'react-native';
+import { View, ScrollView, BackHandler, useColorScheme, Text, TouchableOpacity, Image } from 'react-native';
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 
@@ -61,18 +61,91 @@ export default function HomeScreen() {
 
           <GoalsStatsCard theme={theme} userData={userData} />
 
-          <TouchableOpacity
-            onPress={() => router.push('/progress')}
+          {/* Fixed Track Your Progress button with right-aligned text */}
+          <View
             style={{
-              backgroundColor: theme.primary,
-              padding: 12,
-              borderRadius: 8,
-              marginVertical: 10,
-              alignItems: 'center'
+              backgroundColor: '#292929',
+              padding: 16,
+              borderRadius: 16,
+              marginVertical: 12,
+              marginHorizontal: 4,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 5
             }}
           >
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Track Your Progress</Text>
-          </TouchableOpacity>
+            <View style={{ flexDirection: 'row', padding: 10 }}>
+              {/* Left side image - restored to original size */}
+              <View
+                style={{
+                  width: 90,
+                  height: 90,
+                  borderRadius: 12,
+                  backgroundColor: '#fff',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <Image
+                  source={require('../assets/images/progress.png')}
+                  style={{ width: 62, height: 62, borderRadius: 4 }}
+                />
+              </View>
+
+              <View>
+                {/* Right-aligned title and duration */}
+                <View style={{
+                  flex: 1,
+                  marginLeft: 16,
+                  alignItems: 'flex-end'  // Right-align the text
+                }}>
+                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
+                    How to track your progress
+                  </Text>
+                  <Text style={{ color: 'white', fontSize: 14 }}>
+                    16 Minutes
+                  </Text>
+                </View>
+
+
+                {/* Bottom row with status and button */}
+                <TouchableOpacity onPress={() => router.push('/progress')}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    marginTop: 12
+                  }}>
+                  <View
+                    style={{
+                      backgroundColor: '#404040',
+                      borderRadius: 16,
+                      paddingVertical: 6,
+                      paddingHorizontal: 12,
+                      marginRight: 12
+                    }}
+                  >
+                    <Text style={{ color: 'white', fontSize: 12 }}>On Progress</Text>
+                  </View>
+
+                  <View
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 18,
+                      backgroundColor: 'white',
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Text style={{ fontSize: 18 }}>→</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
 
           <ExploreSection theme={theme} />
         </View>
