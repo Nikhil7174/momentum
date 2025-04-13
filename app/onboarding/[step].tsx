@@ -102,7 +102,7 @@ export default function OnboardingScreen() {
             case 1:
                 return (
                     <>
-                        <View className="bg-orange-200 p-4 rounded-lg mb-6">
+                        <View className="bg-orange-200 dark:bg-orange-900 p-4 rounded-lg mb-6">
                             <Text className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                 What hobby do you want to learn?
                             </Text>

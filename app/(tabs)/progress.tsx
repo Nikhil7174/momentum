@@ -8,6 +8,7 @@ import ProgressChart from '../../components/home/ProgressChart';
 import LearningPlan from '../../components/home/LearningPlan';
 import MotivationalQuote from '../../components/home/MotivationalQuote';
 import { useUserStats } from '@/context/UserStatsContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ProgressScreen: React.FC = () => {
   const colorScheme = useColorScheme();
@@ -26,19 +27,21 @@ const ProgressScreen: React.FC = () => {
   // }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <Header theme={theme} isDarkMode={isDarkMode} />
-      <ScrollView style={{ flex: 1, paddingTop: 15, paddingHorizontal:10 }}>
-        <GoalsStatsCard theme={theme} userData={userData} />
-        <ProgressChart theme={theme} userData={userData} />
-        <LearningPlan
-          theme={theme}
-          weeks={weeks}
-          toggleweekCompletion={toggleWeekCompletion}
-        />
-        <MotivationalQuote theme={theme} />
-      </ScrollView>
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: theme.background }}>
+        <Header theme={theme} isDarkMode={isDarkMode} />
+        <ScrollView style={{ flex: 1, paddingTop: 15, marginBottom: 15, paddingHorizontal: 10 }}>
+          <GoalsStatsCard theme={theme} userData={userData} />
+          <ProgressChart theme={theme} userData={userData} />
+          <LearningPlan
+            theme={theme}
+            weeks={weeks}
+            toggleweekCompletion={toggleWeekCompletion}
+          />
+          <MotivationalQuote theme={theme} />
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
