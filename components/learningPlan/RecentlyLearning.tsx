@@ -7,11 +7,13 @@ import { getYoutubeVideoId } from "@/utils/videoUtils";
 type RecentlyLearningProps = {
     lastViewedResource: ResourceData | null;
     onResourceClick: () => void;
+    isDarkMode?: boolean;
 };
 
 export default function RecentlyLearning({
     lastViewedResource,
     onResourceClick,
+    isDarkMode = false,
 }: RecentlyLearningProps) {
     if (!lastViewedResource) {
         return null;
@@ -19,12 +21,27 @@ export default function RecentlyLearning({
 
     return (
         <>
-            <View className="p-4 bg-white dark:bg-slate-800 rounded-xl mx-4 mt-2">
-                <Text className="text-2xl font-bold text-slate-800 dark:text-white">
+            <View style={{
+                padding: 16,
+                backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+                borderRadius: 12,
+                marginHorizontal: 16,
+                marginTop: 8
+            }}>
+                <Text style={{
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    color: isDarkMode ? '#ffffff' : '#1e293b'
+                }}>
                     Recently learning
                 </Text>
 
-                <View className="w-full aspect-video relative mt-4">
+                <View style={{
+                    width: '100%',
+                    aspectRatio: 16 / 9,
+                    position: 'relative',
+                    marginTop: 16
+                }}>
                     {lastViewedResource.type === "video" ? (
                         <Image
                             source={{
@@ -33,18 +50,44 @@ export default function RecentlyLearning({
                                 )}/hqdefault.jpg`,
                             }}
                             resizeMode="cover"
-                            className="w-full h-full rounded-2xl"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: 16
+                            }}
                         />
                     ) : (
-                        <View className="w-full rounded-2xl h-full bg-gray-200 items-center justify-center">
-                            <Text className="text-6xl">📄</Text>
+                        <View style={{
+                            width: '100%',
+                            borderRadius: 16,
+                            height: '100%',
+                            backgroundColor: '#e5e7eb',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <Text style={{ fontSize: 60 }}>📄</Text>
                         </View>
                     )}
                     <TouchableOpacity
-                        className="absolute inset-0 flex items-center justify-center"
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
                         onPress={onResourceClick}
                     >
-                        <View className="w-12 h-12 rounded-full bg-[#8b5cf6] bg-opacity-50 flex items-center justify-center">
+                        <View style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 24,
+                            backgroundColor: 'rgba(139, 92, 246, 0.5)',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
                             {lastViewedResource.type === "video" ? (
                                 <Ionicons name="play-circle" size={24} color="white" />
                             ) : (

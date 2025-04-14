@@ -15,9 +15,9 @@ const Header: React.FC<HeaderProps> = ({ theme, isDarkMode }) => {
       alignItems: 'center', 
       padding: 16,
       backgroundColor: isDarkMode ? '#1a2234' : '#fff',
-      paddingTop: 30,
+      paddingTop: 13,
       alignContent: 'center',
-      paddingBottom: 10
+      paddingBottom: 13
     }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* <a href="https://www.flaticon.com/free-icons/rocket" title="rocket icons">Rocket icons created by Freepik - Flaticon</a> */}

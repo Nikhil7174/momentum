@@ -1,4 +1,4 @@
-import { View, Text, TextInput, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, TextInput, SafeAreaView, Dimensions, useColorScheme } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
@@ -18,6 +18,8 @@ export default function OnboardingScreen() {
     const currentStep = typeof step === 'string' ? parseInt(step, 10) : 1;
     const progressValue = currentStep / TOTAL_ONBOARDING_STEPS;
     const screenHeight = Dimensions.get('window').height;
+    const colorScheme = useColorScheme();
+    const isDarkMode = colorScheme === 'dark';
 
     const [hobbyName, setHobbyName] = useState('');
     const [currentSkillLevel, setCurrentSkillLevel] = useState<string | null>(null);
@@ -100,7 +102,7 @@ export default function OnboardingScreen() {
             case 1:
                 return (
                     <>
-                        <View className="bg-orange-100 p-4 rounded-lg mb-6">
+                        <View className="bg-orange-200 dark:bg-orange-900 p-4 rounded-lg mb-6">
                             <Text className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                 What hobby do you want to learn?
                             </Text>
@@ -119,7 +121,7 @@ export default function OnboardingScreen() {
             case 2:
                 return (
                     <>
-                        <View className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg mb-6">
+                        <View className="bg-orange-200 dark:bg-orange-900 p-4 rounded-lg mb-6">
                             <Text className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                 What's your current skill level?
                             </Text>
@@ -168,7 +170,7 @@ export default function OnboardingScreen() {
             case 3:
                 return (
                     <>
-                        <View className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg mb-6">
+                        <View className="bg-orange-200 dark:bg-orange-900 p-4 rounded-lg mb-6">
                             <Text className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                 What skill level do you want to achieve?
                             </Text>
@@ -217,7 +219,7 @@ export default function OnboardingScreen() {
             case 4:
                 return (
                     <>
-                        <View className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg mb-6">
+                        <View className="bg-orange-200 dark:bg-orange-900 p-4 rounded-lg mb-6">
                             <Text className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                 How much time can you commit weekly?
                             </Text>
@@ -276,7 +278,7 @@ export default function OnboardingScreen() {
                     <View className="flex-row items-center mb-2 mr-6">
                         {currentStep > 0 && (
                             <TouchableOpacity onPress={() => router.push(currentStep == 1 ? `/(tabs)` : `/onboarding/${currentStep - 1}`)}>
-                                <AntDesign name="arrowleft" size={24} color="#fff" className="dark:text-white" />
+                                <AntDesign name="arrowleft" size={24} color={isDarkMode ? '#fff' : '#000'} />
                             </TouchableOpacity>
                         )}
                         <View className="flex-1 items-center">
@@ -307,7 +309,7 @@ export default function OnboardingScreen() {
                         onPress={handleContinue}
                         disabled={!isStepValid()}
                     >
-                        <View className={`w-full py-4 rounded-lg ${isStepValid() ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-700'}`}>
+                        <View className={`w-full py-4 rounded-lg ${isStepValid() ? 'bg-blue-600' : 'bg-blue-200 dark:bg-gray-700'}`}>
                             <Text className="text-white text-center font-semibold text-lg">
                                 {currentStep === TOTAL_ONBOARDING_STEPS ? 'Get Started' : 'Continue'}
                             </Text>

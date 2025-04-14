@@ -20,7 +20,7 @@ export default function WelcomeScreen() {
           className="w-32 h-32 mb-6"
         />
         <Text className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-          Welcome to HobbyTracker
+          Welcome to Momentum
         </Text>
         <Text className="text-gray-600 dark:text-gray-400 text-center mb-4">
           Your personal guide to mastering any hobby or skill
@@ -28,14 +28,14 @@ export default function WelcomeScreen() {
       </View>
       
       <View className="w-full bg-blue-50 dark:bg-blue-900 rounded-xl p-6 mb-8">
-        <Text className="text-gray-700 dark:text-gray-300 text-center">
+        <Text className="text-gray-600 font-semibold dark:text-gray-300 text-center">
           We'll help you create a personalized learning plan based on your
           current level and goals.
         </Text>
       </View>
       
       <TouchableOpacity 
-        className="bg-blue-600 w-full p-4 rounded-lg"
+        className="bg-blue-600 w-full p-4 rounded-2xl"
         onPress={handleGetStarted}
       >
         <Text className="text-white text-center font-semibold text-lg">

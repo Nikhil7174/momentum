@@ -61,7 +61,7 @@ export default function HomeScreen() {
 
           <GoalsStatsCard theme={theme} userData={userData} />
 
-          {/* Fixed Track Your Progress button with right-aligned text */}
+          {/* Track Your Progress button */}
           <View
             style={{
               backgroundColor: '#292929',
