@@ -170,16 +170,15 @@ export default function LearningScreen() {
         desiredSkillLevel,
         timeCommitment
       });
+  
+      const planData = response.data;
 
-      const fullText = response.data.content[0].text;
-      const jsonString = extractValidJSON(fullText);
-
-      const planData = JSON.parse(jsonString);
       if (planData?.weeks) {
         setLearningPlan(planData);
-        await AsyncStorage.setItem(STORAGE_KEYS.learningPlan,
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.learningPlan,
           JSON.stringify({
-            content: [{ text: jsonString }],
+            content: [{ text: JSON.stringify(planData) }],
             timestamp: new Date().toISOString()
           })
         );
