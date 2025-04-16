@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 interface HeaderProps {
   theme: { text: string };
@@ -29,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ theme, isDarkMode }) => {
           Momentum
         </Text>
       </View>
-      <TouchableOpacity style={{ 
+      <TouchableOpacity onPress={() => router.push('/ProfileScreen')} style={{ 
         borderRadius: 20 
       }}>
         <Ionicons name="person-circle" size={35.5} color={isDarkMode ? "#fff" : "#000"} />
