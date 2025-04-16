@@ -12,6 +12,7 @@ import {
     TIME_OPTIONS,
     STORAGE_KEYS
 } from '../../constants/Onboarding';
+import { useUserStats } from '@/context/UserStatsContext';
 
 export default function OnboardingScreen() {
     const { step } = useLocalSearchParams();
@@ -21,58 +22,35 @@ export default function OnboardingScreen() {
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
 
+    const { updateUserData } = useUserStats();
+
     const [hobbyName, setHobbyName] = useState('');
-    const [currentSkillLevel, setCurrentSkillLevel] = useState<string | null>(null);
-    const [desiredSkillLevel, setDesiredSkillLevel] = useState<string | null>(null);
-    const [timeCommitment, setTimeCommitment] = useState<string | null>(null);
-
-    useEffect(() => {
-        const loadStoredData = async () => {
-            try {
-                const storedHobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName);
-                if (storedHobbyName) setHobbyName(storedHobbyName);
-
-                const storedCurrentSkill = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel);
-                if (storedCurrentSkill) setCurrentSkillLevel(storedCurrentSkill);
-
-                const storedDesiredSkill = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel);
-                if (storedDesiredSkill) setDesiredSkillLevel(storedDesiredSkill);
-
-                const storedTimeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment);
-                if (storedTimeCommitment) setTimeCommitment(storedTimeCommitment);
-            } catch (error) {
-                console.error('Error loading stored data:', error);
-            }
-        };
-
-        loadStoredData();
-    }, []);
+    const [currentSkillLevel, setCurrentSkillLevel] = useState<string>('');
+    const [desiredSkillLevel, setDesiredSkillLevel] = useState<string>('');
+    const [timeCommitment, setTimeCommitment] = useState<string>('');
 
     const handleContinue = async () => {
         try {
+            //TODO simplify: by calling updateUserData only once
             switch (currentStep) {
                 case 1:
-                    await AsyncStorage.setItem(STORAGE_KEYS.hobbyName, hobbyName);
+                    if (hobbyName) await updateUserData({hobbyName});
                     break;
                 case 2:
-                    if (currentSkillLevel) {
-                        await AsyncStorage.setItem(STORAGE_KEYS.currentSkillLevel, currentSkillLevel);
-                    }
+                    if (currentSkillLevel) await updateUserData({currentSkillLevel});      
                     break;
                 case 3:
-                    if (desiredSkillLevel) {
-                        await AsyncStorage.setItem(STORAGE_KEYS.desiredSkillLevel, desiredSkillLevel);
-                    }
+                    if (desiredSkillLevel) await updateUserData({desiredSkillLevel});
                     break;
                 case 4:
                     if (timeCommitment) {
-                        await AsyncStorage.setItem(STORAGE_KEYS.timeCommitment, timeCommitment);
+                        await updateUserData({timeCommitment});
                         await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
                     }
                     break;
             }
 
-            if (currentStep < 4) {
+            if (currentStep < TOTAL_ONBOARDING_STEPS) {
                 router.push(`/onboarding/${currentStep + 1}`);
             } else {
                 router.replace('/(tabs)');
@@ -87,11 +65,11 @@ export default function OnboardingScreen() {
             case 1:
                 return hobbyName.trim().length > 0;
             case 2:
-                return currentSkillLevel !== null;
+                return currentSkillLevel !== '';
             case 3:
-                return desiredSkillLevel !== null;
+                return desiredSkillLevel !== '';
             case 4:
-                return timeCommitment !== null;
+                return timeCommitment !== '';
             default:
                 return false;
         }
@@ -273,11 +251,10 @@ export default function OnboardingScreen() {
     return (
         <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
             <View style={{ height: screenHeight }} className="p-6">
-                {/* Header with back button and progress */}
                 <View className="mb-6 mt-4">
                     <View className="flex-row items-center mb-2 mr-6">
                         {currentStep > 0 && (
-                            <TouchableOpacity onPress={() => router.push(currentStep == 1 ? `/(tabs)` : `/onboarding/${currentStep - 1}`)}>
+                            <TouchableOpacity onPress={() => router.push(currentStep === 1 ? `/(tabs)` : `/onboarding/${currentStep - 1}`)}>
                                 <AntDesign name="arrowleft" size={24} color={isDarkMode ? '#fff' : '#000'} />
                             </TouchableOpacity>
                         )}
@@ -298,12 +275,10 @@ export default function OnboardingScreen() {
                     />
                 </View>
 
-                {/* Main content */}
                 <View className="flex-1 justify-start" style={{ paddingTop: screenHeight * 0.05 }}>
                     {renderStepContent()}
                 </View>
 
-                {/* Bottom button - fixed at bottom */}
                 <View className="mb-4">
                     <TouchableOpacity
                         onPress={handleContinue}

@@ -17,15 +17,6 @@ const ProgressScreen: React.FC = () => {
 
   const { userData, weeks, toggleWeekCompletion } = useUserStats();
 
-  // useEffect(() => {
-  //   // Optionally handle Android back button for your progress screen
-  //   const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-  //     BackHandler.exitApp();
-  //     return true;
-  //   });
-  //   return () => backHandler.remove();
-  // }, []);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: theme.background }}>

@@ -1,15 +1,21 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React from 'react';
+import { View, Text, useColorScheme } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { createTheme } from '@/utils/themeUtils';
 
-const community = () => {
+const Community: React.FC = () => {
+  const colorScheme = useColorScheme();
+  const theme = createTheme(colorScheme === 'dark');
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View className='items-center flex-1 justify-center'>
-        <Text className='font-bold text-xl'>Coming soon</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontWeight: 'bold', fontSize: 20, color: theme.text }}>
+          Coming soon
+        </Text>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default community
+export default Community;

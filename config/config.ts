@@ -1,0 +1,1 @@
+export const BACKEND_SERVER_URL = 'https://momentum-backend-server-1.onrender.com/generate-personalized-learning'
