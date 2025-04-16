@@ -1,5 +1,5 @@
 import { View, ScrollView, BackHandler, useColorScheme, Linking, Modal, TouchableOpacity } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Text } from 'react-native';
 import { WebView } from 'react-native-webview';
 import YoutubePlayer from 'react-native-youtube-iframe';
@@ -47,6 +47,7 @@ export default function LearningScreen() {
   const [currentArticleTitle, setCurrentArticleTitle] = useState('');
 
   const [currentResourceTitle, setCurrentResourceTitle] = useState('');
+  const isFetchingRef = useRef(false);
 
   const isUserDataComplete = () => {
     return (
@@ -58,9 +59,13 @@ export default function LearningScreen() {
   };
 
   useEffect(() => {
-    if (isUserDataComplete() && (userDataUpdated || !learningPlan?.weeks?.length)) {
-      fetchLearningPlan();
-      setUserDataUpdated(false);
+    if (!isFetchingRef.current && isUserDataComplete() && (userDataUpdated || !learningPlan?.weeks?.length)) {
+      isFetchingRef.current = true;
+      
+      fetchLearningPlan().finally(() => {
+        isFetchingRef.current = false;
+        setUserDataUpdated(false);
+      });
     }
   }, [userDataUpdated, userData]);
 
