@@ -49,7 +49,6 @@ const ProfileScreen: React.FC = () => {
         desiredSkillLevel,
         timeCommitment,
       });
-      await fetchLearningPlan();
       Alert.alert('Success', 'Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
