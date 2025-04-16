@@ -176,7 +176,7 @@ useEffect(() => {
             loop
             style={{ width: 200, height: 200 }}
           />
-          <Text className='font-semibold text-xl justify-center items-center text-center'>
+          <Text className='font-semibold text-xl justify-center items-center text-center dark:text-white'>
             Creating personalized learning plan for {userData.hobbyName} ...
           </Text>
         </View>
