@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { STORAGE_KEYS } from '@/constants/Onboarding';
+import { LearningPlanData } from '@/types/LearningPlanTypes';
 
 // Define all the types we need
 export interface ResourceData {
@@ -24,7 +26,7 @@ export interface WeekData {
   completed: boolean;
 }
 
-// Create context type
+// Extend the context type to include setIsLoadingPlan
 interface UserStatsContextType {
   userData: UserData;
   weeks: WeekData[];
@@ -32,6 +34,12 @@ interface UserStatsContextType {
   updateLastViewedResource: (resource: ResourceData) => Promise<void>;
   toggleWeekCompletion: (id: string) => Promise<void>;
   updateUserData: (data: Partial<UserData>) => Promise<void>;
+  learningPlan: LearningPlanData | null;
+  isLoadingPlan: boolean;
+  setIsLoadingPlan: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchLearningPlan: () => Promise<void>;
+  userDataUpdated: boolean;
+  setUserDataUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Create the context with default values
@@ -48,6 +56,12 @@ const UserStatsContext = createContext<UserStatsContextType>({
   updateLastViewedResource: async () => {},
   toggleWeekCompletion: async () => {},
   updateUserData: async () => {},
+  learningPlan: { weeks: [] },
+  isLoadingPlan: false,
+  setIsLoadingPlan: () => {},
+  fetchLearningPlan: async () => {},
+  userDataUpdated: false,
+  setUserDataUpdated: () => {},
 });
 
 // Provider component
@@ -68,17 +82,21 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
   ]);
   
   const [lastViewedResource, setLastViewedResource] = useState<ResourceData | null>(null);
+  const [learningPlan, setLearningPlan] = useState<LearningPlanData | null>({ weeks: [] });
+  const [isLoadingPlan, setIsLoadingPlan] = useState(false);
+  const [userDataUpdated, setUserDataUpdated] = useState(false);
 
   // Load all data on mount
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load user data
-        const hobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName) || 'Coding';
-        const currentSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel) || 'Beginner';
-        const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || 'Advanced';
-        const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '10 hours/week';
+        const hobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName) || '';
+        const currentSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel) || '';
+        const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || '';
+        const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '';
         const savedProgress = await AsyncStorage.getItem(STORAGE_KEYS.progress) || '0';
+
+        console.log(" testttt---->" ," 1. ", hobbyName, " 2. ", currentSkillLevel, "3. ", desiredSkillLevel, "4. ", timeCommitment)
 
         setUserData({
           hobbyName,
@@ -88,13 +106,11 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
           progress: parseInt(savedProgress, 10),
         });
         
-        // Load weeks data
         const savedWeeks = await AsyncStorage.getItem(STORAGE_KEYS.weeks);
         if (savedWeeks) {
           setWeeks(JSON.parse(savedWeeks));
         }
         
-        // Load last viewed resource
         const savedResource = await AsyncStorage.getItem(STORAGE_KEYS.lastViewedResource);
         if (savedResource) {
           setLastViewedResource(JSON.parse(savedResource));
@@ -107,7 +123,81 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
     loadData();
   }, []);
 
-  // Update functions
+  const fetchLearningPlan = async () => {
+    try {
+      setIsLoadingPlan(true);
+
+      console.log("userData -=-" ,userData)
+      const { hobbyName, currentSkillLevel, desiredSkillLevel, timeCommitment } = userData;
+      
+      if (!hobbyName || !currentSkillLevel || !desiredSkillLevel || !timeCommitment) {
+        console.error('Missing required user data for learning plan');
+        setIsLoadingPlan(false);
+        return;
+      }
+      
+      // Check if we already have a stored plan
+      const storedPlan = await AsyncStorage.getItem(STORAGE_KEYS.learningPlan);
+      
+      if (storedPlan) {
+        const parsedPlan = JSON.parse(storedPlan);
+        const storedUserData = parsedPlan.userData || {};
+        if (
+          storedUserData.hobbyName === hobbyName &&
+          storedUserData.currentSkillLevel === currentSkillLevel &&
+          storedUserData.desiredSkillLevel === desiredSkillLevel &&
+          storedUserData.timeCommitment === timeCommitment
+        ) {
+          try {
+            const planData = JSON.parse(parsedPlan.content[0].text);
+            setLearningPlan(planData);
+            console.log("planData -> ", planData)
+            setIsLoadingPlan(false);
+            return;
+          } catch (e) {
+            console.error('Corrupted stored plan:', e);
+            await AsyncStorage.removeItem(STORAGE_KEYS.learningPlan);
+          }
+        }
+      }
+
+      console.log('Fetching new plan for:', hobbyName, currentSkillLevel, desiredSkillLevel, timeCommitment);
+      
+      const response = await axios.post('https://momentum-backend-server-1.onrender.com/generate-personalized-learning', {
+        hobbyName,
+        currentSkillLevel,
+        desiredSkillLevel,
+        timeCommitment
+      });
+  
+      const planData = response.data;
+      console.log("planData ----> " , planData)
+      if (planData?.weeks) {
+        setLearningPlan(planData);
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.learningPlan,
+          JSON.stringify({
+            content: [{ text: JSON.stringify(planData) }],
+            userData: {
+              hobbyName,
+              currentSkillLevel,
+              desiredSkillLevel,
+              timeCommitment
+            },
+            timestamp: new Date().toISOString()
+          })
+        );
+      } else {
+        throw new Error('Invalid learning plan structure');
+      }
+    } catch (error) {
+      console.error('Failed to process learning plan:', { error });
+      setLearningPlan({ weeks: [] });
+    } finally {
+      setIsLoadingPlan(false);
+    }
+  };
+
   const updateLastViewedResource = async (resource: ResourceData) => {
     try {
       setLastViewedResource(resource);
@@ -123,10 +213,8 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
     );
     setWeeks(updatedWeeks);
     
-    // Update progress based on completed weeks
     const completedCount = updatedWeeks.filter(week => week.completed).length;
     const newProgress = Math.round((completedCount / updatedWeeks.length) * 100);
-    
     setUserData(prev => ({ ...prev, progress: newProgress }));
     
     try {
@@ -138,16 +226,28 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
   };
   
   const updateUserData = async (data: Partial<UserData>) => {
+    console.log("data", data)
     const updatedData = { ...userData, ...data };
+    console.log("updatedData ->", updatedData)
     setUserData(updatedData);
-    
+    setUserDataUpdated(true);
+
     try {
-      // Only update the fields that were provided
-      if (data.hobbyName) await AsyncStorage.setItem(STORAGE_KEYS.hobbyName, data.hobbyName);
-      if (data.currentSkillLevel) await AsyncStorage.setItem(STORAGE_KEYS.currentSkillLevel, data.currentSkillLevel);
-      if (data.desiredSkillLevel) await AsyncStorage.setItem(STORAGE_KEYS.desiredSkillLevel, data.desiredSkillLevel);
-      if (data.timeCommitment) await AsyncStorage.setItem(STORAGE_KEYS.timeCommitment, data.timeCommitment);
+      if (data.hobbyName !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.hobbyName, data.hobbyName);
+      if (data.currentSkillLevel !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.currentSkillLevel, data.currentSkillLevel);
+      if (data.desiredSkillLevel !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.desiredSkillLevel, data.desiredSkillLevel);
+      if (data.timeCommitment !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.timeCommitment, data.timeCommitment);
       if (data.progress !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.progress, data.progress.toString());
+      
+      // Remove stored plan if any user preferences changed.
+      if (
+        data.hobbyName !== undefined || 
+        data.currentSkillLevel !== undefined || 
+        data.desiredSkillLevel !== undefined || 
+        data.timeCommitment !== undefined
+      ) {
+        await AsyncStorage.removeItem(STORAGE_KEYS.learningPlan);
+      }
     } catch (error) {
       console.error('Failed to update user data:', error);
     }
@@ -158,10 +258,16 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
       value={{ 
         userData,
         weeks,
-        lastViewedResource, 
+        lastViewedResource,
         updateLastViewedResource,
         toggleWeekCompletion,
-        updateUserData
+        updateUserData,
+        learningPlan,
+        isLoadingPlan,
+        setIsLoadingPlan,
+        fetchLearningPlan,
+        userDataUpdated,
+        setUserDataUpdated
       }}
     >
       {children}

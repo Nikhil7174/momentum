@@ -9,6 +9,12 @@ import { useRouter } from 'expo-router';
 import { SKILL_LEVELS, GOAL_LEVELS, TIME_OPTIONS } from '../constants/Onboarding';
 import Dropdown, { Option } from '@/components/profile/Dropdown';
 
+const DROPDOWN_IDS = {
+  SKILL: 'skill',
+  GOAL: 'goal',
+  TIME: 'time'
+};
+
 const ProfileScreen: React.FC = () => {
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -20,6 +26,12 @@ const ProfileScreen: React.FC = () => {
   const [currentSkillLevel, setCurrentSkillLevel] = useState(userData.currentSkillLevel);
   const [desiredSkillLevel, setDesiredSkillLevel] = useState(userData.desiredSkillLevel);
   const [timeCommitment, setTimeCommitment] = useState(userData.timeCommitment);
+  
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const handleToggleDropdown = (dropdownId: string) => {
+    setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
+  };
 
   // Sync local values when context changes
   useEffect(() => {
@@ -79,18 +91,24 @@ const ProfileScreen: React.FC = () => {
           selectedValue={currentSkillLevel}
           onSelect={setCurrentSkillLevel}
           placeholder="Select your level"
+          isOpen={openDropdown === DROPDOWN_IDS.SKILL}
+          onToggle={() => handleToggleDropdown(DROPDOWN_IDS.SKILL)}
         />
         <Dropdown
           options={GOAL_LEVELS as Option[]}
           selectedValue={desiredSkillLevel}
           onSelect={setDesiredSkillLevel}
           placeholder="Select your goal"
+          isOpen={openDropdown === DROPDOWN_IDS.GOAL}
+          onToggle={() => handleToggleDropdown(DROPDOWN_IDS.GOAL)}
         />
         <Dropdown
           options={TIME_OPTIONS as Option[]}
           selectedValue={timeCommitment}
           onSelect={setTimeCommitment}
           placeholder="Select time commitment"
+          isOpen={openDropdown === DROPDOWN_IDS.TIME}
+          onToggle={() => handleToggleDropdown(DROPDOWN_IDS.TIME)}
         />
         <TouchableOpacity
           onPress={handleSave}

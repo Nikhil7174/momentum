@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, useColorScheme, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import { createTheme } from '@/utils/themeUtils';
 
 export interface Option {
   id: string;
@@ -15,6 +16,8 @@ interface DropdownProps {
   containerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   dropdownStyle?: StyleProp<ViewStyle>;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -25,8 +28,11 @@ const Dropdown: React.FC<DropdownProps> = ({
   containerStyle,
   textStyle,
   dropdownStyle,
+  isOpen,
+  onToggle
 }) => {
-  const [open, setOpen] = useState(false);
+  const isDarkMode = useColorScheme() === 'dark';
+  const theme = createTheme(isDarkMode);
 
   const getLabel = () => {
     const found = options.find(opt => opt.id === selectedValue);
@@ -36,20 +42,22 @@ const Dropdown: React.FC<DropdownProps> = ({
   return (
     <View style={[{ marginBottom: 16 }, containerStyle]}>
       <TouchableOpacity
-        onPress={() => setOpen(prev => !prev)}
+        onPress={onToggle}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: '#f2f2f2',
+          backgroundColor: isDarkMode ? theme.card : '#f2f2f2',
           borderRadius: 8,
           padding: 12,
         }}
       >
-        <Text style={[{ color: '#333', fontSize: 16 }, textStyle]}>{getLabel()}</Text>
-        <AntDesign name={open ? 'up' : 'down'} size={16} color="#808080" />
+        <Text style={[{ color: isDarkMode ? '#fff' : '#333', fontSize: 16 }, textStyle]}>
+          {getLabel()}
+        </Text>
+        <AntDesign name={isOpen ? 'up' : 'down'} size={16} color={isDarkMode ? '#ccc' : '#808080'} />
       </TouchableOpacity>
-      {open && (
+      {isOpen && (
         <View
           style={[
             {
@@ -57,7 +65,8 @@ const Dropdown: React.FC<DropdownProps> = ({
               borderRadius: 8,
               overflow: 'hidden',
               borderWidth: 1,
-              borderColor: '#ccc',
+              borderColor: isDarkMode ? '#3A3A3C' : '#ccc',
+              backgroundColor: isDarkMode ? theme.card : '#f2f2f2',
             },
             dropdownStyle,
           ]}
@@ -67,19 +76,34 @@ const Dropdown: React.FC<DropdownProps> = ({
               key={option.id}
               onPress={() => {
                 onSelect(option.id);
-                setOpen(false);
+                onToggle(); // Close dropdown after selection
               }}
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: 12,
-                backgroundColor: selectedValue === option.id ? '#e6f0ff' : '#f2f2f2',
                 borderBottomWidth: 1,
-                borderBottomColor: '#ccc',
+                borderBottomColor: isDarkMode ? '#101826' : '#ccc',
+                backgroundColor:
+                  selectedValue === option.id
+                    ? (isDarkMode ? '#131d2e' : '#e6f0ff')
+                    : undefined,
               }}
             >
-              <Text style={{ color: selectedValue === option.id ? '#3B82F6' : '#333', fontSize: 16 }}>
+              <Text
+                style={[
+                  {
+                    fontSize: 16,
+                    color:
+                      selectedValue === option.id
+                        ? '#3B82F6'
+                        : isDarkMode
+                        ? '#fff'
+                        : '#333',
+                  },
+                ]}
+              >
                 {option.label}
               </Text>
               {selectedValue === option.id && (

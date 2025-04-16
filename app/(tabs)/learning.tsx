@@ -1,23 +1,19 @@
 import { View, ScrollView, BackHandler, useColorScheme, Linking, Modal, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '@/constants/Onboarding';
 import { Text } from 'react-native';
 import { WebView } from 'react-native-webview';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { Dimensions } from 'react-native';
-import axios from 'axios';
 import LottieView from 'lottie-react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import Header from '@/components/home/Header';
-import MotivationalQuote from '@/components/home/MotivationalQuote';
 import RecentlyLearning from '@/components/learningPlan/RecentlyLearning';
 import WeeklyCourse from '@/components/learningPlan/ResourceWatchlist';
 import { useUserStats } from '@/context/UserStatsContext';
 import { createTheme } from '@/utils/themeUtils';
 import { getYoutubeVideoId } from '@/utils/videoUtils';
-import { ResourceItem, ResourceData, LearningPlanData } from '@/types/LearningPlanTypes';
+import { ResourceItem } from '@/types/LearningPlanTypes';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width;
@@ -26,72 +22,56 @@ export default function LearningScreen() {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
   const theme = createTheme(isDarkMode);
+  const router = useRouter();
 
-  const { updateLastViewedResource } = useUserStats();
   const { openResource } = useLocalSearchParams();
+  const { 
+    userData, 
+    lastViewedResource, 
+    updateLastViewedResource,
+    learningPlan,
+    isLoadingPlan,
+    fetchLearningPlan,
+    userDataUpdated,  // Add this
+    setUserDataUpdated  // Add this  
+  } = useUserStats();
 
-  const [userData, setUserData] = useState({
-    hobbyName: 'Coding',
-    currentSkillLevel: 'Beginner',
-    desiredSkillLevel: 'Advanced',
-    timeCommitment: 'dedicated',
-    progress: 40,
-  });
-
-  const [learningPlan, setLearningPlan] = useState<LearningPlanData | null>({ weeks: [] });
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(0);
 
-  // Track last viewed resource
-  const [lastViewedResource, setLastViewedResource] = useState<ResourceData | null>(null);
-
-  // Video player modal state
   const [videoModalVisible, setVideoModalVisible] = useState(false);
   const [currentVideoId, setCurrentVideoId] = useState<string | null>(null);
   const [currentVideoTitle, setCurrentVideoTitle] = useState('');
 
-  // Article viewer modal state
   const [articleModalVisible, setArticleModalVisible] = useState(false);
   const [currentArticleUrl, setCurrentArticleUrl] = useState('');
   const [currentArticleTitle, setCurrentArticleTitle] = useState('');
 
   const [currentResourceTitle, setCurrentResourceTitle] = useState('');
 
+  const isUserDataComplete = () => {
+    return (
+      userData.hobbyName && 
+      userData.currentSkillLevel && 
+      userData.desiredSkillLevel && 
+      userData.timeCommitment
+    );
+  };
+
+useEffect(() => {
+  if (isUserDataComplete() && (userDataUpdated || !learningPlan?.weeks?.length)) {
+    fetchLearningPlan();
+    setUserDataUpdated(false);  // Reset flag after fetch
+  }
+}, [userDataUpdated, userData]);
+
+
+// useEffect(() => {
+//   if (isUserDataComplete()) {
+//     fetchLearningPlan();
+//   }
+// }, []);
+
   useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const hobbyName = await AsyncStorage.getItem(STORAGE_KEYS.hobbyName) || 'Coding';
-        const currentSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel) || 'Beginner';
-        const desiredSkillLevel = await AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel) || 'Advanced';
-        const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || 'dedicated';
-        const savedProgress = await AsyncStorage.getItem(STORAGE_KEYS.progress) || '40';
-        const savedLastViewedResource = await AsyncStorage.getItem(STORAGE_KEYS.lastViewedResource);
-
-        setUserData({
-          hobbyName,
-          currentSkillLevel,
-          desiredSkillLevel,
-          timeCommitment,
-          progress: parseInt(savedProgress, 10),
-        });
-
-        if (savedLastViewedResource) {
-          setLastViewedResource(JSON.parse(savedLastViewedResource));
-        }
-
-        await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
-
-        // After loading user data, check for existing learning plan or fetch new one
-        await fetchLearningPlan(hobbyName, currentSkillLevel, desiredSkillLevel, timeCommitment);
-      } catch (error) {
-        console.error('Failed to load user data:', error);
-        setIsLoading(false);
-      }
-    };
-
-    loadUserData();
-
-    // Handle Android back button
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (videoModalVisible) {
         setVideoModalVisible(false);
@@ -113,7 +93,6 @@ export default function LearningScreen() {
       try {
         const resource = JSON.parse(openResource as string);
         setCurrentResourceTitle(resource.title);
-        // Check type to decide how to open it:
         if (resource.type === 'video') {
           const videoId = getYoutubeVideoId(resource.url);
           if (videoId) {
@@ -132,67 +111,6 @@ export default function LearningScreen() {
     }
   }, [openResource]);
 
-  const extractValidJSON = (text: string): string => {
-    // First try to find JSON code block
-    const codeBlockMatch = text.match(/```json\n([\s\S]*?)```/);
-    if (codeBlockMatch) return codeBlockMatch[1].trim();
-
-    // Fallback to text before Explanation section and remove Processing JSON prefix
-    const [jsonWithPrefix] = text.split('\n\nExplanation:\n\n');
-    const jsonString = jsonWithPrefix.replace(/^Processing JSON:\s*/i, '').trim();
-    return jsonString;
-  };
-
-  const fetchLearningPlan = async (
-    hobbyName: string,
-    currentSkillLevel: string,
-    desiredSkillLevel: string,
-    timeCommitment: string
-  ) => {
-    try {
-      const storedPlan = await AsyncStorage.getItem(STORAGE_KEYS.learningPlan);
-      if (storedPlan) {
-        const parsedPlan = JSON.parse(storedPlan);
-        try {
-          const planData = JSON.parse(parsedPlan.content[0].text);
-          setLearningPlan(planData);
-          setIsLoading(false);
-          return;
-        } catch (e) {
-          console.error('Corrupted stored plan:', e);
-          await AsyncStorage.removeItem(STORAGE_KEYS.learningPlan);
-        }
-      }
-
-      const response = await axios.post('https://momentum-backend-server-1.onrender.com/generate-personalized-learning', {
-        hobbyName,
-        currentSkillLevel,
-        desiredSkillLevel,
-        timeCommitment
-      });
-  
-      const planData = response.data;
-
-      if (planData?.weeks) {
-        setLearningPlan(planData);
-        await AsyncStorage.setItem(
-          STORAGE_KEYS.learningPlan,
-          JSON.stringify({
-            content: [{ text: JSON.stringify(planData) }],
-            timestamp: new Date().toISOString()
-          })
-        );
-      } else {
-        throw new Error('Invalid learning plan structure');
-      }
-    } catch (error) {
-      console.error('Failed to process learning plan:', { error });
-      throw new Error('Failed to load learning plan. Please try again later.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleResourceClick = async (resource: ResourceItem, type: 'video' | 'article', weekIndex: number) => {
     const resourceData = {
       type,
@@ -201,15 +119,7 @@ export default function LearningScreen() {
       weekIndex
     };
 
-    await updateLastViewedResource({
-      type,
-      title: resource.title,
-      url: resource.url,
-      weekIndex
-    });
-
-    setLastViewedResource(resourceData);
-    await AsyncStorage.setItem(STORAGE_KEYS.lastViewedResource, JSON.stringify(resourceData));
+    await updateLastViewedResource(resourceData);
 
     if (type === 'video') {
       const videoId = getYoutubeVideoId(resource.url);
@@ -238,7 +148,25 @@ export default function LearningScreen() {
     }
   };
 
-  if (isLoading) {
+  if (!isUserDataComplete()) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <Text className='font-semibold text-xl text-center mb-6'>
+            Please complete your profile to generate a learning plan
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.push('/ProfileScreen')}
+            className='bg-blue-500 py-3 px-6 rounded-lg'
+          >
+            <Text className='text-white font-semibold'>Go to Profile</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isLoadingPlan) {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
@@ -249,7 +177,7 @@ export default function LearningScreen() {
             style={{ width: 200, height: 200 }}
           />
           <Text className='font-semibold text-xl justify-center items-center text-center'>
-            Creating personalized learning plan for you ...
+            Creating personalized learning plan for {userData.hobbyName} ...
           </Text>
         </View>
       </SafeAreaView>
@@ -269,7 +197,7 @@ export default function LearningScreen() {
           />
 
           <WeeklyCourse
-            isLoading={isLoading}
+            isLoading={isLoadingPlan}
             learningPlan={learningPlan}
             selectedWeek={selectedWeek}
             setSelectedWeek={setSelectedWeek}
