@@ -1,7 +1,7 @@
+import React, { useCallback } from 'react';
 import { View, ScrollView, BackHandler, useColorScheme, Text, TouchableOpacity, Image } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { useRouter } from 'expo-router';
-
 import Header from '../components/home/Header';
 import WelcomeCard from '../components/home/WelcomeCard';
 import GoalsStatsCard from '../components/home/GoalsStatsCard';
@@ -15,18 +15,17 @@ export default function HomeScreen() {
   const isDarkMode = colorScheme === 'dark';
   const theme = createTheme(isDarkMode);
   const router = useRouter();
-
   const { userData, lastViewedResource } = useUserStats();
 
-  useEffect(() => {
-    // Handle Android back button
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      BackHandler.exitApp();
-      return true;
-    });
-
-    return () => backHandler.remove();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        BackHandler.exitApp();
+        return true;
+      });
+      return () => backHandler.remove();
+    }, [])
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -34,7 +33,6 @@ export default function HomeScreen() {
 
       <ScrollView style={{ flex: 1 }}>
         <View className="px-4 py-2">
-          {/* Display Last Viewed Resource if available */}
           {lastViewedResource && (
             <TouchableOpacity
               className="mx-[10px] my-2 p-4 bg-blue-100 dark:bg-blue-900 rounded-xl"
@@ -58,7 +56,6 @@ export default function HomeScreen() {
           )}
 
           <WelcomeCard theme={theme} hobbyName={userData.hobbyName} />
-
           <GoalsStatsCard theme={theme} userData={userData} />
 
           {/* Track Your Progress button */}
@@ -77,7 +74,6 @@ export default function HomeScreen() {
             }}
           >
             <View style={{ flexDirection: 'row', padding: 10 }}>
-              {/* Left side image - restored to original size */}
               <View
                 style={{
                   width: 90,
@@ -95,11 +91,10 @@ export default function HomeScreen() {
               </View>
 
               <View>
-                {/* Right-aligned title and duration */}
                 <View style={{
                   flex: 1,
                   marginLeft: 16,
-                  alignItems: 'flex-end'  // Right-align the text
+                  alignItems: 'flex-end'
                 }}>
                   <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
                     How to track your progress
@@ -109,8 +104,6 @@ export default function HomeScreen() {
                   </Text>
                 </View>
 
-
-                {/* Bottom row with status and button */}
                 <TouchableOpacity onPress={() => router.push('/progress')}
                   style={{
                     flexDirection: 'row',

@@ -57,36 +57,12 @@ export default function LearningScreen() {
     );
   };
 
-useEffect(() => {
-  if (isUserDataComplete() && (userDataUpdated || !learningPlan?.weeks?.length)) {
-    fetchLearningPlan();
-    setUserDataUpdated(false);  // Reset flag after fetch
-  }
-}, [userDataUpdated, userData]);
-
-
-// useEffect(() => {
-//   if (isUserDataComplete()) {
-//     fetchLearningPlan();
-//   }
-// }, []);
-
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (videoModalVisible) {
-        setVideoModalVisible(false);
-        return true;
-      }
-      if (articleModalVisible) {
-        setArticleModalVisible(false);
-        return true;
-      }
-      BackHandler.exitApp();
-      return true;
-    });
-
-    return () => backHandler.remove();
-  }, []);
+    if (isUserDataComplete() && (userDataUpdated || !learningPlan?.weeks?.length)) {
+      fetchLearningPlan();
+      setUserDataUpdated(false);
+    }
+  }, [userDataUpdated, userData]);
 
   useEffect(() => {
     if (openResource) {
