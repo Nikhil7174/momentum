@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
 import { useUserStats } from '@/context/UserStatsContext';
 import { createTheme } from '@/utils/themeUtils';
@@ -20,7 +20,7 @@ const ProfileScreen: React.FC = () => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
   const theme = createTheme(isDarkMode);
-  const { userData, fetchLearningPlan, updateUserData } = useUserStats();
+  const { userData, updateUserData } = useUserStats();
 
   const [hobbyName, setHobbyName] = useState(userData.hobbyName);
   const [currentSkillLevel, setCurrentSkillLevel] = useState(userData.currentSkillLevel);
@@ -28,6 +28,7 @@ const ProfileScreen: React.FC = () => {
   const [timeCommitment, setTimeCommitment] = useState(userData.timeCommitment);
   
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleToggleDropdown = (dropdownId: string) => {
     setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
@@ -42,6 +43,7 @@ const ProfileScreen: React.FC = () => {
   }, [userData]);
 
   const handleSave = async () => {
+    setIsSaving(true);
     try {
       await updateUserData({
         hobbyName,
@@ -54,6 +56,7 @@ const ProfileScreen: React.FC = () => {
       console.error('Error updating profile:', error);
       Alert.alert('Error', 'Failed to update profile. Please try again.');
     }
+    setIsSaving(false);
   };
 
   return (
@@ -70,7 +73,7 @@ const ProfileScreen: React.FC = () => {
           <View style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: theme.card,
+              backgroundColor: isDarkMode ? theme.card : '#f2f2f2',
               borderRadius: 8,
               paddingHorizontal: 12,
               paddingVertical: 2
@@ -111,6 +114,7 @@ const ProfileScreen: React.FC = () => {
         />
         <TouchableOpacity
           onPress={handleSave}
+          disabled={isSaving}
           style={{
               backgroundColor: theme.primary,
               padding: 16,
@@ -120,7 +124,13 @@ const ProfileScreen: React.FC = () => {
               marginBottom: 40,
           }}
         >
-          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Save Profile</Text>
+          {isSaving ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+              Save Profile
+            </Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

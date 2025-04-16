@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { View, ScrollView, BackHandler, useColorScheme, Text, TouchableOpacity, Image } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useEffect } from 'react';
 import Header from '../components/home/Header';
 import WelcomeCard from '../components/home/WelcomeCard';
 import GoalsStatsCard from '../components/home/GoalsStatsCard';
@@ -65,7 +64,7 @@ export default function HomeScreen() {
               padding: 16,
               borderRadius: 16,
               marginVertical: 12,
-              marginHorizontal: 4,
+              marginHorizontal: 8,
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.3,
@@ -109,7 +108,7 @@ export default function HomeScreen() {
                     flexDirection: 'row',
                     justifyContent: 'flex-end',
                     alignItems: 'center',
-                    marginTop: 12
+                    marginTop: 25
                   }}>
                   <View
                     style={{

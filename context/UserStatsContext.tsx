@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { STORAGE_KEYS } from '@/constants/Onboarding';
 import { LearningPlanData } from '@/types/LearningPlanTypes';
+import { BACKEND_SERVER_URL } from '@/config/config';
 
 // Define all the types we need
 export interface ResourceData {
@@ -96,8 +97,6 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
         const timeCommitment = await AsyncStorage.getItem(STORAGE_KEYS.timeCommitment) || '';
         const savedProgress = await AsyncStorage.getItem(STORAGE_KEYS.progress) || '0';
 
-        console.log(" testttt---->" ," 1. ", hobbyName, " 2. ", currentSkillLevel, "3. ", desiredSkillLevel, "4. ", timeCommitment)
-
         setUserData({
           hobbyName,
           currentSkillLevel,
@@ -126,10 +125,9 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
   const fetchLearningPlan = async () => {
     try {
       setIsLoadingPlan(true);
+      setLastViewedResource(null);
 
-      console.log("userData -=-" ,userData)
       const { hobbyName, currentSkillLevel, desiredSkillLevel, timeCommitment } = userData;
-      
       if (!hobbyName || !currentSkillLevel || !desiredSkillLevel || !timeCommitment) {
         console.error('Missing required user data for learning plan');
         setIsLoadingPlan(false);
@@ -151,7 +149,6 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
           try {
             const planData = JSON.parse(parsedPlan.content[0].text);
             setLearningPlan(planData);
-            console.log("planData -> ", planData)
             setIsLoadingPlan(false);
             return;
           } catch (e) {
@@ -160,10 +157,8 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
           }
         }
       }
-
-      console.log('Fetching new plan for:', hobbyName, currentSkillLevel, desiredSkillLevel, timeCommitment);
       
-      const response = await axios.post('https://momentum-backend-server-1.onrender.com/generate-personalized-learning', {
+      const response = await axios.post( BACKEND_SERVER_URL, {
         hobbyName,
         currentSkillLevel,
         desiredSkillLevel,
@@ -171,7 +166,6 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
       });
   
       const planData = response.data;
-      console.log("planData ----> " , planData)
       if (planData?.weeks) {
         setLearningPlan(planData);
         await AsyncStorage.setItem(
@@ -226,9 +220,7 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
   };
   
   const updateUserData = async (data: Partial<UserData>) => {
-    console.log("data", data)
     const updatedData = { ...userData, ...data };
-    console.log("updatedData ->", updatedData)
     setUserData(updatedData);
     setUserDataUpdated(true);
 
