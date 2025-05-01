@@ -1,14 +1,6 @@
+import { iThemeUtils } from '@/types/ColorThemetypes';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-
-interface Theme {
-  text: string;
-  card: string;
-  isDarkMode: boolean;
-  border: string;
-  inactive: string;
-  success: string;
-}
 
 interface week {
   id: string;
@@ -17,7 +9,7 @@ interface week {
 }
 
 interface LearningPlanProps {
-  theme: Theme;
+  theme: iThemeUtils;
   weeks: week[];
   toggleweekCompletion: (id: string) => void;
 }

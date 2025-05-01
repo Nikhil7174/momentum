@@ -2,20 +2,21 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { iThemeUtils } from '@/types/ColorThemetypes';
 
 interface HeaderProps {
-  theme: { text: string };
-  isDarkMode: boolean;
+  theme: iThemeUtils
 }
 
-const Header: React.FC<HeaderProps> = ({ theme, isDarkMode }) => {
+const Header: React.FC<HeaderProps> = ({ theme }) => {
+  console.log("theme.isDarkMode", theme.isDarkMode)
   return (
     <View style={{ 
       flexDirection: 'row', 
       justifyContent: 'space-between', 
       alignItems: 'center', 
       padding: 16,
-      backgroundColor: isDarkMode ? '#1a2234' : '#fff',
+      backgroundColor: theme.isDarkMode ? '#1a2234' : '#fff',
       paddingTop: 13,
       alignContent: 'center',
       paddingBottom: 13
@@ -33,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ theme, isDarkMode }) => {
       <TouchableOpacity onPress={() => router.push('/ProfileScreen')} style={{ 
         borderRadius: 20 
       }}>
-        <Ionicons name="person-circle" size={35.5} color={isDarkMode ? "#fff" : "#000"} />
+        <Ionicons name="person-circle" size={35.5} color={theme.isDarkMode ? "#fff" : "#000"} />
       </TouchableOpacity>
     </View>
   );

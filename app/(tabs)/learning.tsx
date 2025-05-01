@@ -1,4 +1,4 @@
-import { View, ScrollView, BackHandler, useColorScheme, Linking, Modal, TouchableOpacity } from 'react-native';
+import { View, ScrollView, Linking, Modal, TouchableOpacity } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { Text } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -15,13 +15,15 @@ import { createTheme } from '@/utils/themeUtils';
 import { getYoutubeVideoId } from '@/utils/videoUtils';
 import { ResourceItem } from '@/types/LearningPlanTypes';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function LearningScreen() {
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const rootTheme = useTheme();
+  const isDarkMode = rootTheme.dark;
   const theme = createTheme(isDarkMode);
+  console.log("isDarkMode", isDarkMode, theme.background)
   const router = useRouter();
 
   const { openResource } = useLocalSearchParams();
@@ -32,8 +34,8 @@ export default function LearningScreen() {
     learningPlan,
     isLoadingPlan,
     fetchLearningPlan,
-    userDataUpdated,  // Add this
-    setUserDataUpdated  // Add this  
+    userDataUpdated, 
+    setUserDataUpdated
   } = useUserStats();
 
   const [selectedWeek, setSelectedWeek] = useState(0);
@@ -167,8 +169,10 @@ export default function LearningScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View className="flex-1 bg-slate-50 dark:bg-slate-900 mb-[6vh]">
-        <Header theme={theme} isDarkMode={isDarkMode} />
+      <View className="flex-1 pb-[5vh] h-full" style={{backgroundColor
+        : theme.background
+      }}>
+        <Header theme={theme} />
 
         <ScrollView className="flex-1">
           <RecentlyLearning

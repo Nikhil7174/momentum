@@ -1,14 +1,8 @@
+import { iThemeUtils } from '@/types/ColorThemetypes';
 import React from 'react';
 import { View, Text } from 'react-native';
 
-interface Theme {
-  border: string;
-  isDarkMode: boolean;
-  subtext: string;
-  inactive: string;
-}
-
-const MotivationalQuote = ({ theme }: { theme: Theme }) => {
+const MotivationalQuote = ({ theme }: { theme: iThemeUtils }) => {
   return (
     <View style={{ 
       margin: 10, 

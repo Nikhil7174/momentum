@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, useColorScheme, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import { View, Text, TouchableOpacity, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { createTheme } from '@/utils/themeUtils';
+import { useTheme } from '@react-navigation/native';
 
 export interface Option {
   id: string;
@@ -31,7 +32,8 @@ const Dropdown: React.FC<DropdownProps> = ({
   isOpen,
   onToggle
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const rootTheme = useTheme();
+  const isDarkMode = rootTheme.dark;
   const theme = createTheme(isDarkMode);
 
   const getLabel = () => {

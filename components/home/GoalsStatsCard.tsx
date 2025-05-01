@@ -1,14 +1,6 @@
+import { iThemeUtils } from '@/types/ColorThemetypes';
 import React from 'react';
 import { View, Text } from 'react-native';
-
-interface Theme {
-  text: string;
-  subtext: string;
-  card: string;
-  primary: string;
-  border: string;
-  isDarkMode: boolean;
-}
 
 interface UserData {
   progress: number;
@@ -17,7 +9,7 @@ interface UserData {
   desiredSkillLevel: string;
 }
 
-const GoalsStatsCard: React.FC<{ theme: Theme; userData: UserData }> = ({ theme, userData }) => {
+const GoalsStatsCard: React.FC<{ theme: iThemeUtils; userData: UserData }> = ({ theme, userData }) => {
   // Calculate days to goal based on progress and time commitment
   const calculateEstimatedTimeToGoal = () => {
     const progressPercentage = userData.progress / 100;

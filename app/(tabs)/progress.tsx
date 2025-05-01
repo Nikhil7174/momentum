@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { View, ScrollView, BackHandler } from 'react-native';
-import { useColorScheme } from 'react-native';
 import { createTheme } from '../../utils/themeUtils';
 import Header from '../../components/home/Header';
 import GoalsStatsCard from '../../components/home/GoalsStatsCard';
@@ -9,10 +8,11 @@ import LearningPlan from '../../components/home/LearningPlan';
 import MotivationalQuote from '../../components/home/MotivationalQuote';
 import { useUserStats } from '@/context/UserStatsContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '@react-navigation/native';
 
 const ProgressScreen: React.FC = () => {
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const rootTheme = useTheme();
+  const isDarkMode = rootTheme.dark;
   const theme = createTheme(isDarkMode);
 
   const { userData, weeks, toggleWeekCompletion } = useUserStats();
@@ -20,7 +20,7 @@ const ProgressScreen: React.FC = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: theme.background }}>
-        <Header theme={theme} isDarkMode={isDarkMode} />
+        <Header theme={theme} />
         <ScrollView style={{ flex: 1, paddingTop: 15, marginBottom: 15, paddingHorizontal: 10 }}>
           <GoalsStatsCard theme={theme} userData={userData} />
           <ProgressChart theme={theme} userData={userData} />

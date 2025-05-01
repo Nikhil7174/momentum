@@ -30,7 +30,8 @@ export const STORAGE_KEYS = {
   weeks: 'weeks',
   progress: 'progress',
   learningPlan: 'learningPlan',
-  lastViewedResource: 'lastViewedResource'
+  lastViewedResource: 'lastViewedResource',
+  themeStorageKey: 'userThemePreference'
 };
 
 export const LABELS: Record<string, string> = {

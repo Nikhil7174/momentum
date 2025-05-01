@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
 import { useUserStats } from '@/context/UserStatsContext';
 import { createTheme } from '@/utils/themeUtils';
 import { useRouter } from 'expo-router';
 import { SKILL_LEVELS, GOAL_LEVELS, TIME_OPTIONS } from '../constants/Onboarding';
 import Dropdown, { Option } from '@/components/profile/Dropdown';
+import ThemeSelector from '@/components/profile/ThemeSelector';
+import { useTheme } from '@/context/ThemeContext';
 
 const DROPDOWN_IDS = {
   SKILL: 'skill',
@@ -17,9 +18,9 @@ const DROPDOWN_IDS = {
 
 const ProfileScreen: React.FC = () => {
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
-  const theme = createTheme(isDarkMode);
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
+  const appTheme = createTheme(isDarkMode);
   const { userData, updateUserData } = useUserStats();
 
   const [hobbyName, setHobbyName] = useState(userData.hobbyName);
@@ -60,34 +61,39 @@ const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: appTheme.background }}>
       <ScrollView style={{ padding: 16 }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 20 }}>
-          <AntDesign name="arrowleft" size={24} color={theme.text} />
+          <AntDesign name="arrowleft" size={24} color={appTheme.text} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', color: theme.text, marginBottom: 20 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: appTheme.text, marginBottom: 20 }}>
           Profile
         </Text>
         <View style={{ marginBottom: 16 }}>
-          <Text style={{ color: theme.subtext, marginBottom: 4, fontSize: 16 }}>Hobby Name</Text>
+
+        <ThemeSelector />
+
+          <Text style={{ color: appTheme.subtext, marginBottom: 4, fontSize: 16 }}>Hobby Name</Text>
           <View style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: isDarkMode ? theme.card : '#f2f2f2',
+              backgroundColor: isDarkMode ? appTheme.card : '#f2f2f2',
               borderRadius: 8,
               paddingHorizontal: 12,
-              paddingVertical: 2
+              paddingVertical: 2,
+              height: 48
           }}>
-            <Ionicons name="happy-outline" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+            <Ionicons name="happy-outline" size={20} color={appTheme.primary} style={{ marginRight: 8 }} />
             <TextInput
               value={hobbyName}
               onChangeText={setHobbyName}
               placeholder="Enter your hobby"
-              style={{ flex: 1, color: theme.text }}
-              placeholderTextColor={theme.subtext}
+              style={{ flex: 1, color: appTheme.text }}
+              placeholderTextColor={appTheme.subtext}
             />
           </View>
         </View>
+                
         <Dropdown
           options={SKILL_LEVELS as Option[]}
           selectedValue={currentSkillLevel}
@@ -116,7 +122,7 @@ const ProfileScreen: React.FC = () => {
           onPress={handleSave}
           disabled={isSaving}
           style={{
-              backgroundColor: theme.primary,
+              backgroundColor: appTheme.primary,
               padding: 16,
               borderRadius: 8,
               alignItems: 'center',
