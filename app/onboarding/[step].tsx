@@ -1,7 +1,7 @@
-import { View, Text, TextInput, SafeAreaView, Dimensions, useColorScheme } from 'react-native';
+import { View, Text, TextInput, SafeAreaView, Dimensions } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
@@ -13,14 +13,15 @@ import {
     STORAGE_KEYS
 } from '../../constants/Onboarding';
 import { useUserStats } from '@/context/UserStatsContext';
+import { useTheme } from '@react-navigation/native';
 
 export default function OnboardingScreen() {
     const { step } = useLocalSearchParams();
     const currentStep = typeof step === 'string' ? parseInt(step, 10) : 1;
     const progressValue = currentStep / TOTAL_ONBOARDING_STEPS;
     const screenHeight = Dimensions.get('window').height;
-    const colorScheme = useColorScheme();
-    const isDarkMode = colorScheme === 'dark';
+    const rootTheme = useTheme();
+    const isDarkMode = rootTheme.dark;
 
     const { updateUserData } = useUserStats();
 

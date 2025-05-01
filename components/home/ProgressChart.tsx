@@ -1,21 +1,13 @@
+import { iThemeUtils } from '@/types/ColorThemetypes';
 import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-
-interface Theme {
-  text: string;
-  card: string;
-  isDarkMode: boolean;
-  primary: string;
-  accent: string;
-  subtext: string;
-}
 
 interface UserData {
   progress: number;
 }
 
-const ProgressChart: React.FC<{ theme: Theme; userData: UserData }> = ({ theme, userData }) => {
+const ProgressChart: React.FC<{ theme: iThemeUtils; userData: UserData }> = ({ theme, userData }) => {
   const currentProgress = userData.progress; 
   // If currentProgress is 0, we set weekly progress to zero
   const weeklySplit = currentProgress > 0 ? [

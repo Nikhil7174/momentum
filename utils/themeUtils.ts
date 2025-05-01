@@ -11,5 +11,13 @@ export const createTheme = (isDarkMode: boolean) => {
       accent: isDarkMode ? '#fbbf24' : '#f59e0b',
       success: '#10b981',
       inactive: isDarkMode ? '#475569' : '#cbd5e1',
+      blue100: '#dbeafe',
+      blue900: '#1e3a8a',
+      blue500: '#3b82f6',
+      blue300: '#93c5fd',
+      slate800: '#1e293b',
+      slate600: '#475569',
+      slate300: '#cbd5e1',
+      white: '#ffffff',
     };
   };

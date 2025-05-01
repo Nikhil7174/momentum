@@ -3,15 +3,9 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { iThemeUtils } from '@/types/ColorThemetypes';
 
-interface Theme {
-  text: string;
-  primary: string;
-  secondary: string;
-  isDarkMode: boolean;
-}
-
-const ExploreSection: React.FC<{ theme: Theme }> = ({ theme }) => {
+const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
   const router = useRouter();
 
   return (

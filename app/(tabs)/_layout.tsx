@@ -6,11 +6,11 @@ import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { createTheme } from '../../utils/themeUtils';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useTheme } from '@react-navigation/native';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const rootTheme = useTheme();
+  const isDarkMode = rootTheme.dark;
   const theme = createTheme(isDarkMode);
 
   return (
@@ -25,10 +25,10 @@ export default function TabLayout() {
           ios: {
             // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
-            shadowColor: isDarkMode ? '#000' : 'rgba(0, 0, 0, 0.25)',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: isDarkMode ? 0.6 : 0.3,
-            shadowRadius: 4,
+            shadowColor: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)',
+            shadowOffset: { width: 0, height: isDarkMode ? -2 : 2 },
+            shadowOpacity: isDarkMode ? 1 : 0.3,
+            shadowRadius: isDarkMode ? 10 : 4,
           },
           default: {
             position: 'absolute',
@@ -37,10 +37,15 @@ export default function TabLayout() {
             marginBottom: 8,
             backgroundColor: isDarkMode ? theme.card : 'white',
             elevation: 10,
-            shadowColor: isDarkMode ? '#000' : 'rgba(0, 0, 0, 0.25)',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: isDarkMode ? 0.6 : 0.3,
-            shadowRadius: 4,
+            // Dark mode: light shadow from top and sides to create a glow effect
+            // Light mode: traditional shadow underneath
+            shadowColor: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)',
+            shadowOffset: { width: 0, height: isDarkMode ? -1 : 2 },
+            shadowOpacity: isDarkMode ? 1 : 0.3,
+            shadowRadius: isDarkMode ? 10 : 4,
+            // Add a more pronounced border in dark mode for extra definition
+            borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+            borderWidth: isDarkMode ? 1 : 0,
             paddingBottom: 0,
             borderRadius: 40,
             marginHorizontal: 20,

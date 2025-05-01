@@ -1,14 +1,9 @@
+import { iThemeUtils } from '@/types/ColorThemetypes';
 import React from 'react';
 import { View, Text } from 'react-native';
 
 interface WelcomeCardProps {
-  theme: {
-    card: string;
-    isDarkMode: boolean;
-    accent: string;
-    text: string;
-    subtext: string;
-  };
+  theme: iThemeUtils;
   hobbyName: string;
 }
 
