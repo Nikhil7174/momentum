@@ -255,7 +255,13 @@ export default function OnboardingScreen() {
                 <View className="mb-6 mt-4">
                     <View className="flex-row items-center mb-2 mr-6">
                         {currentStep > 0 && (
-                            <TouchableOpacity onPress={() => router.push(currentStep === 1 ? `/(tabs)` : `/onboarding/${currentStep - 1}`)}>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    currentStep === 1
+                                        ? router.replace('/welcome')
+                                        : router.push(`/onboarding/${currentStep - 1}`)
+                                }
+                            >
                                 <AntDesign name="arrowleft" size={24} color={isDarkMode ? '#fff' : '#000'} />
                             </TouchableOpacity>
                         )}

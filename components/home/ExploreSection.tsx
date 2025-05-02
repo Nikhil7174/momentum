@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { Ionicons } from '@expo/vector-icons';
 import { iThemeUtils } from '@/types/ColorThemetypes';
 
 const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
@@ -54,7 +55,7 @@ const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                <Text style={{ color: '#5B76FF', fontWeight: 'bold', fontSize: 12 }}>→</Text>
+                <Ionicons name="arrow-forward" size={12} color="#5B76FF" />
               </View>
             </View>
           </TouchableOpacity>
@@ -70,7 +71,7 @@ const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
                 backgroundColor: 'rgba(255,255,255,0.2)',
                 padding: 8,
               }}>
-                <Text style={{ fontSize: 20 }}>📊</Text>
+                <Ionicons name="stats-chart-outline" size={20} color="white" />
               </View>
             </BlurView>
 
@@ -82,7 +83,7 @@ const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
                 backgroundColor: 'rgba(255,255,255,0.2)',
                 padding: 8
               }}>
-                <Text style={{ fontSize: 20 }}>📝</Text>
+                <Ionicons name="pencil-outline" size={20} color="white" />
               </View>
             </BlurView>
           </View>
@@ -128,7 +129,7 @@ const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                <Text style={{ color: '#7E57C2', fontWeight: 'bold', fontSize: 12 }}>→</Text>
+                <Ionicons name="arrow-forward" size={12} color="#7E57C2" />
               </View>
             </View>
           </TouchableOpacity>
@@ -144,7 +145,7 @@ const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
                 backgroundColor: 'rgba(255,255,255,0.2)',
                 padding: 8,
               }}>
-                <Text style={{ fontSize: 20 }}>📚</Text>
+                <Ionicons name="book-outline" size={20} color="white" />
               </View>
             </BlurView>
 
@@ -156,7 +157,7 @@ const ExploreSection: React.FC<{ theme: iThemeUtils }> = ({ theme }) => {
                 backgroundColor: 'rgba(255,255,255,0.2)',
                 padding: 8
               }}>
-                <Text style={{ fontSize: 20 }}>🎓</Text>
+                <Ionicons name="school-outline" size={20} color="white" />
               </View>
             </BlurView>
           </View>

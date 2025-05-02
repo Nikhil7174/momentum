@@ -23,7 +23,6 @@ export default function LearningScreen() {
   const rootTheme = useTheme();
   const isDarkMode = rootTheme.dark;
   const theme = createTheme(isDarkMode);
-  console.log("isDarkMode", isDarkMode, theme.background)
   const router = useRouter();
 
   const { openResource } = useLocalSearchParams();
