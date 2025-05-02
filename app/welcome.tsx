@@ -28,46 +28,53 @@ const { width, height } = Dimensions.get('window');
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const SKILL_ICONS = [
-  { 
-    id: 'coding', 
-    iconName: 'code-slash',    size: 28, 
-    startX: Math.random() * width, 
-    startY: Math.random() * height 
+  {
+    id: 'coding',
+    iconName: 'code-slash', size: 28,
+    startX: Math.random() * width,
+    startY: Math.random() * height
   },
-  { 
-    id: 'cooking', 
-    iconName: 'restaurant',    size: 30, 
-    startX: Math.random() * width, 
-    startY: Math.random() * height 
+  {
+    id: 'cooking',
+    iconName: 'restaurant', size: 30,
+    startX: Math.random() * width,
+    startY: Math.random() * height
   },
-  { 
-    id: 'videography', 
-    iconName: 'videocam-outline',    size: 32, 
-    startX: Math.random() * width, 
-    startY: Math.random() * height 
+  {
+    id: 'videography',
+    iconName: 'videocam-outline', size: 32,
+    startX: Math.random() * width,
+    startY: Math.random() * height
   },
-  { 
-    id: 'music', 
-    iconName: 'musical-notes',  size: 32, 
-    startX: Math.random() * width, 
-    startY: Math.random() * height 
+  {
+    id: 'music',
+    iconName: 'musical-notes', size: 32,
+    startX: Math.random() * width,
+    startY: Math.random() * height
   },
-  { 
-    id: 'selfHelp', 
+  {
+    id: 'selfHelp',
     iconName: 'book-outline',
-    size: 28, 
-    startX: Math.random() * width, 
-    startY: Math.random() * height 
+    size: 28,
+    startX: Math.random() * width,
+    startY: Math.random() * height
   },
-  { 
-    id: 'gym', 
-    iconName: 'barbell-outline',    size: 28, 
-    startX: Math.random() * width, 
-    startY: Math.random() * height 
+  {
+    id: 'gym',
+    iconName: 'barbell-outline', size: 28,
+    startX: Math.random() * width,
+    startY: Math.random() * height
   }
 ];
 
-function FloatingIcon({ iconName, size, startX, startY }) {
+interface FloatingIconProps {
+  iconName: any;
+  size: number;
+  startX: number;
+  startY: number;
+}
+
+const FloatingIcon: React.FC<FloatingIconProps> = ({ iconName, size, startX, startY }) => {
   const translateX = useSharedValue(startX);
   const translateY = useSharedValue(startY);
   const rotation = useSharedValue(0);
@@ -143,7 +150,7 @@ export default function WelcomeScreen() {
   const rocketScale = useSharedValue(1);
   const rocketY = useSharedValue(0);
   const rocketX = useSharedValue(0);
-  
+
   // Animation values for gradient
   const gradientProgress = useSharedValue(0);
 
@@ -174,7 +181,7 @@ export default function WelcomeScreen() {
       -1,
       true
     );
-    
+
     gradientProgress.value = withRepeat(
       withTiming(1, { duration: 3000 }),
       -1,
@@ -189,10 +196,10 @@ export default function WelcomeScreen() {
         await SplashScreen.hideAsync();
       }
     }
-    
+
     hideSplashScreen();
   }, [fontsLoaded]);
-  
+
   const gradientColors = useDerivedValue<readonly [string, string, ...string[]]>(() => {
     if (isDark) {
       return [
@@ -267,11 +274,11 @@ export default function WelcomeScreen() {
         withSequence(
           withTiming(-2.5, { duration: 100, easing: Easing.inOut(Easing.quad) }),
           withTiming(2.5, { duration: 100, easing: Easing.inOut(Easing.quad) })
-        ), 
+        ),
         -1,
         true
       );
-      
+
       rocketShakeY.value = withRepeat(
         withSequence(
           withTiming(-1.5, { duration: 200, easing: Easing.inOut(Easing.quad) }),
@@ -324,10 +331,10 @@ export default function WelcomeScreen() {
           <View style={styles.logoContainer}>
             <Animated.View style={rocketStyle}>
               <View style={[styles.logoCircle, isDark ? styles.logoCircleDark : styles.logoCircleLight]}>
-                <Ionicons 
-                  name="rocket" 
-                  size={60} 
-                  color={isDark ? '#5980FF' : '#49b9f5'} 
+                <Ionicons
+                  name="rocket"
+                  size={60}
+                  color={isDark ? '#5980FF' : '#49b9f5'}
                 />
               </View>
             </Animated.View>
@@ -416,7 +423,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: 'Roboto-VariableFont'
   },
-  
+
   subtitle: {
     width: '80%',
     fontSize: 15,

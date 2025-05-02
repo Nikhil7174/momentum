@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { View, ScrollView, BackHandler } from 'react-native';
+import React from 'react';
+import { View, ScrollView } from 'react-native';
 import { createTheme } from '../../utils/themeUtils';
 import Header from '../../components/home/Header';
 import GoalsStatsCard from '../../components/home/GoalsStatsCard';
-import ProgressChart from '../../components/home/ProgressChart';
-import LearningPlan from '../../components/home/LearningPlan';
+import LearningPath from '@/components/progress/LearningPath';
+import LearningPlan from '@/components/home/LearningPlan';
 import MotivationalQuote from '../../components/home/MotivationalQuote';
 import { useUserStats } from '@/context/UserStatsContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,12 +23,18 @@ const ProgressScreen: React.FC = () => {
         <Header theme={theme} />
         <ScrollView style={{ flex: 1, paddingTop: 15, marginBottom: 15, paddingHorizontal: 10 }}>
           <GoalsStatsCard theme={theme} userData={userData} />
-          <ProgressChart theme={theme} userData={userData} />
+
+          <LearningPath
+            theme={theme}
+            weeks={weeks}
+          />
+
           <LearningPlan
             theme={theme}
             weeks={weeks}
-            toggleweekCompletion={toggleWeekCompletion}
+            toggleWeekCompletion={toggleWeekCompletion}
           />
+
           <MotivationalQuote theme={theme} />
         </ScrollView>
       </View>
