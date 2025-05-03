@@ -97,7 +97,7 @@ export default function AnimatedHomeScreen() {
   };
 
   const handleBackgroundPress = () => {
-    zoomProgress.value = withTiming(0, { duration: 350 }, () => {
+    zoomProgress.value = withTiming(0, { duration: 200 }, () => {
       runOnJS(resetActiveCard)();
     });
     backgroundOpacity.value = withTiming(0, { duration: 300 });

@@ -27,13 +27,19 @@ const ProfileScreen: React.FC = () => {
   const [currentSkillLevel, setCurrentSkillLevel] = useState(userData.currentSkillLevel);
   const [desiredSkillLevel, setDesiredSkillLevel] = useState(userData.desiredSkillLevel);
   const [timeCommitment, setTimeCommitment] = useState(userData.timeCommitment);
-  
+
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleToggleDropdown = (dropdownId: string) => {
     setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
   };
+
+  const hasChanges =
+    hobbyName !== userData.hobbyName ||
+    currentSkillLevel !== userData.currentSkillLevel ||
+    desiredSkillLevel !== userData.desiredSkillLevel ||
+    timeCommitment !== userData.timeCommitment;
 
   // Sync local values when context changes
   useEffect(() => {
@@ -74,17 +80,17 @@ const ProfileScreen: React.FC = () => {
         </Text>
         <View style={{ marginBottom: 16 }}>
 
-        <ThemeSelector />
+          <ThemeSelector />
 
           <Text style={{ color: appTheme.subtext, marginBottom: 4, fontSize: 16 }}>Hobby Name</Text>
           <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: isDarkMode ? appTheme.card : '#f2f2f2',
-              borderRadius: 8,
-              paddingHorizontal: 12,
-              paddingVertical: 2,
-              height: 48
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: isDarkMode ? appTheme.card : '#f2f2f2',
+            borderRadius: 8,
+            paddingHorizontal: 12,
+            paddingVertical: 2,
+            height: 48
           }}>
             <Ionicons name="happy-outline" size={20} color={appTheme.primary} style={{ marginRight: 8 }} />
             <TextInput
@@ -96,7 +102,7 @@ const ProfileScreen: React.FC = () => {
             />
           </View>
         </View>
-                
+
         <Dropdown
           options={SKILL_LEVELS as Option[]}
           selectedValue={currentSkillLevel}
@@ -123,14 +129,15 @@ const ProfileScreen: React.FC = () => {
         />
         <TouchableOpacity
           onPress={handleSave}
-          disabled={isSaving}
+          disabled={!hasChanges || isSaving}
           style={{
-              backgroundColor: appTheme.primary,
-              padding: 16,
-              borderRadius: 8,
-              alignItems: 'center',
-              marginTop: 20,
-              marginBottom: 40,
+            backgroundColor: appTheme.primary,
+            opacity: hasChanges ? 1 : 0.6,
+            padding: 16,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 20,
+            marginBottom: 40,
           }}
         >
           {isSaving ? (

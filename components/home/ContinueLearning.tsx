@@ -58,8 +58,8 @@ const ContinueLearning: React.FC<ContinueLearningProps> = ({
   
         <Text
           style={{
-            fontSize: 15,
-            fontWeight: '700',
+            fontSize: 14,
+            fontWeight: '500',
             color: titleColor,
             marginTop: 4,
           }}
