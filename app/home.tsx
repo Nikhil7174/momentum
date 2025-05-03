@@ -74,7 +74,6 @@ export default function AnimatedHomeScreen() {
   const zoomProgress = useSharedValue(0);
   const backgroundOpacity = useSharedValue(0);
   const screenScale = useSharedValue(1);
-  const router = useRouter()
   const measureCard = (cardId, layout) => {
     setCardMeasurements(prev => ({
       ...prev,
@@ -139,8 +138,14 @@ export default function AnimatedHomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background, flex: 1 }]}>
+      <StatusBar translucent backgroundColor="transparent" />
       <Header theme={theme} />
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        scrollEnabled={!activeCardId}
+        pointerEvents={activeCardId ? 'none' : 'auto'}
+      >
 
         <Animated.View style={[styles.contentContainer, contentContainerStyle]}>
 
@@ -195,7 +200,7 @@ export default function AnimatedHomeScreen() {
         {activeCardId && (
           <Animated.View style={[styles.backgroundOverlay, overlayStyle]}>
             <Pressable
-              style={StyleSheet.absoluteFill}
+              style={[StyleSheet.absoluteFill, { justifyContent: 'center' }]}
               onPress={handleBackgroundPress}
             >
               <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.75)' }]} />
@@ -215,10 +220,15 @@ export default function AnimatedHomeScreen() {
 }
 
 const ZoomedCard = ({ card, measurements, zoomProgress, onActionPress }) => {
+
+  const statusBarHeight = StatusBar.currentHeight || 0;
+  const headerHeight = 20;
+  const targetHeight = height * 0.6;
+  const targetY = (height - targetHeight - statusBarHeight - headerHeight) / 2;
+
   const targetWidth = width * 0.9;
-  const targetHeight = height * 0.5;
   const targetX = (width - targetWidth) / 2;
-  const targetY = (height - targetHeight) / 2;
+  const router = useRouter()
 
   // Determine the destination route based on card ID
   const getDestinationRoute = (cardId) => {
@@ -294,6 +304,12 @@ const ZoomedCard = ({ card, measurements, zoomProgress, onActionPress }) => {
           source={card.image}
           style={styles.zoomedCardBackgroundImage}
         >
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={onActionPress}
+          >
+            <Ionicons name="close" size={28} color="white" />
+          </TouchableOpacity>
           <View style={[styles.zoomedCardOverlay, { backgroundColor: card.baseColor + 'DD' }]}>
             <View style={styles.zoomedCardHeader}>
               <Text style={styles.zoomedCardName}>{card.id.charAt(0).toUpperCase() + card.id.slice(1)}</Text>
@@ -447,5 +463,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 30,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
 });
