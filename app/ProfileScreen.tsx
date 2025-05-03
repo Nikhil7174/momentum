@@ -21,7 +21,7 @@ const ProfileScreen: React.FC = () => {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
   const appTheme = createTheme(isDarkMode);
-  const { userData, updateUserData } = useUserStats();
+  const { userData, updateUserData, fetchLearningPlan } = useUserStats();
 
   const [hobbyName, setHobbyName] = useState(userData.hobbyName);
   const [currentSkillLevel, setCurrentSkillLevel] = useState(userData.currentSkillLevel);
@@ -52,6 +52,9 @@ const ProfileScreen: React.FC = () => {
         desiredSkillLevel,
         timeCommitment,
       });
+      
+      fetchLearningPlan();
+      
       Alert.alert('Success', 'Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);

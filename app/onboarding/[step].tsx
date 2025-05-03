@@ -23,12 +23,15 @@ export default function OnboardingScreen() {
     const rootTheme = useTheme();
     const isDarkMode = rootTheme.dark;
 
-    const { updateUserData } = useUserStats();
-
     const [hobbyName, setHobbyName] = useState('');
     const [currentSkillLevel, setCurrentSkillLevel] = useState<string>('');
     const [desiredSkillLevel, setDesiredSkillLevel] = useState<string>('');
     const [timeCommitment, setTimeCommitment] = useState<string>('');
+    const { 
+        updateUserData,
+        fetchLearningPlan,
+        setUserDataUpdated 
+      } = useUserStats();
 
     const handleContinue = async () => {
         try {
@@ -43,12 +46,14 @@ export default function OnboardingScreen() {
                 case 3:
                     if (desiredSkillLevel) await updateUserData({desiredSkillLevel});
                     break;
-                case 4:
-                    if (timeCommitment) {
-                        await updateUserData({timeCommitment});
-                        await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
-                    }
-                    break;
+                    case 4:
+                        if (timeCommitment) {
+                          await updateUserData({ timeCommitment });
+                          await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
+                          fetchLearningPlan();
+                          router.replace('/(tabs)');
+                        }
+                        break;
             }
 
             if (currentStep < TOTAL_ONBOARDING_STEPS) {
