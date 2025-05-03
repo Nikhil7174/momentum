@@ -1,22 +1,131 @@
-import React, { useCallback } from 'react';
-import { View, ScrollView, BackHandler, Text, TouchableOpacity, Image } from 'react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
-import Header from '../components/home/Header';
-import WelcomeCard from '../components/home/WelcomeCard';
-import GoalsStatsCard from '../components/home/GoalsStatsCard';
-import ExploreSection from '../components/home/ExploreSection';
-import MotivationalQuote from '../components/home/MotivationalQuote';
-import { useUserStats } from '@/context/UserStatsContext';
-import { createTheme } from '../utils/themeUtils';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, Dimensions, TouchableOpacity, StatusBar, ImageBackground, BackHandler } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  interpolate,
+  Extrapolate,
+  runOnJS
+} from 'react-native-reanimated';
+import { BlurView } from 'expo-blur';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { createTheme } from '@/utils/themeUtils';
+import { ScrollView } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import CardComponent from '@/components/home/CardComponent';
 import ContinueLearning from '@/components/home/ContinueLearning';
+import WelcomeCard from '@/components/home/WelcomeCard';
+import Header from '@/components/home/Header';
+import { useUserStats } from '@/context/UserStatsContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+const { width, height } = Dimensions.get('window');
 
-export default function HomeScreen() {
+const LEARNING_CARDS = [
+  {
+    id: 'practice',
+    title: 'Practice Techniques',
+    description: 'Start learning',
+    icon: 'layers-outline',
+    baseColor: '#183685',
+    position: { x: 0, y: 0 },
+    floatOffset: 8,
+    image: require('../assets/images/practice.png')
+  },
+  {
+    id: 'learn',
+    title: 'Learning Resources',
+    description: 'Start learning',
+    icon: 'book-outline',
+    baseColor: '#372073',
+    position: { x: 0, y: 0 },
+    floatOffset: 10,
+    image: require('../assets/images/learning.png')
+  },
+  {
+    id: 'progress',
+    title: 'Track Progress',
+    description: 'View analytics',
+    icon: 'trending-up-outline',
+    baseColor: '#573718',
+    position: { x: 0, y: 0 },
+    floatOffset: 6,
+    image: require('../assets/images/progress.png')
+  },
+  {
+    id: 'community',
+    title: 'Community',
+    description: 'Join discussion',
+    icon: 'people-outline',
+    baseColor: '#82631a',
+    position: { x: 0, y: 0 },
+    floatOffset: 7,
+    image: require('../assets/images/community.png')
+  }
+];
+
+export default function AnimatedHomeScreen() {
+  const [activeCardId, setActiveCardId] = useState(null);
+  const [cardMeasurements, setCardMeasurements] = useState({});
+  const { userData, lastViewedResource } = useUserStats();
+
+  const zoomProgress = useSharedValue(0);
+  const backgroundOpacity = useSharedValue(0);
+  const screenScale = useSharedValue(1);
+  const router = useRouter()
+  const measureCard = (cardId, layout) => {
+    setCardMeasurements(prev => ({
+      ...prev,
+      [cardId]: {
+        x: layout.x,
+        y: layout.y,
+        width: layout.width,
+        height: layout.height
+      }
+    }));
+  };
+
+  const handleCardPress = (cardId) => {
+    if (activeCardId !== null) return;
+
+    setActiveCardId(cardId);
+    zoomProgress.value = withTiming(1, { duration: 400 });
+    backgroundOpacity.value = withTiming(1, { duration: 300 });
+    screenScale.value = withTiming(0.9, { duration: 300 });
+  };
+
+  const handleBackgroundPress = () => {
+    zoomProgress.value = withTiming(0, { duration: 350 }, () => {
+      runOnJS(resetActiveCard)();
+    });
+    backgroundOpacity.value = withTiming(0, { duration: 300 });
+    screenScale.value = withTiming(1, { duration: 300 });
+  };
+
+  const resetActiveCard = () => {
+    setActiveCardId(null);
+  };
+
+  const contentContainerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: screenScale.value }
+      ]
+    };
+  });
+
+  const overlayStyle = useAnimatedStyle(() => {
+    return {
+      opacity: backgroundOpacity.value,
+      zIndex: backgroundOpacity.value > 0 ? 10 : -1,
+    };
+  });
+
   const rootTheme = useTheme();
   const isDarkMode = rootTheme.dark;
   const theme = createTheme(isDarkMode);
-  const router = useRouter();
-  const { userData, lastViewedResource } = useUserStats();
 
   useFocusEffect(
     useCallback(() => {
@@ -29,105 +138,314 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
+    <View style={[styles.container, { backgroundColor: theme.background, flex: 1 }]}>
       <Header theme={theme} />
-
       <ScrollView style={{ flex: 1 }}>
-        <View className="px-4 py-2">
-          {lastViewedResource && (
-            <ContinueLearning theme={theme} lastViewedResource={lastViewedResource} />
-          )}
 
-          <WelcomeCard theme={theme} hobbyName={userData.hobbyName} />
-          <GoalsStatsCard theme={theme} userData={userData} />
+        <Animated.View style={[styles.contentContainer, contentContainerStyle]}>
 
-          {/* Track Your Progress button */}
-          <View
-            style={{
-              backgroundColor: '#292929',
-              padding: 16,
-              borderRadius: 16,
-              marginVertical: 12,
-              marginHorizontal: 8,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
-              elevation: 5
-            }}
-          >
-            <View style={{ flexDirection: 'row', padding: 10 }}>
-              <View
-                style={{
-                  width: 90,
-                  height: 90,
-                  borderRadius: 12,
-                  backgroundColor: '#fff',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              >
-                <Image
-                  source={require('../assets/images/progress.png')}
-                  style={{ width: 62, height: 62, borderRadius: 4 }}
-                />
-              </View>
-
-              <View>
-                <View style={{
-                  flex: 1,
-                  marginLeft: 16,
-                  alignItems: 'flex-end'
-                }}>
-                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
-                    How to track your progress
-                  </Text>
-                  <Text style={{ color: 'white', fontSize: 14 }}>
-                    16 Minutes
-                  </Text>
-                </View>
-
-                <TouchableOpacity onPress={() => router.push('/progress')}
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                    alignItems: 'center',
-                    marginTop: 25
-                  }}>
-                  <View
-                    style={{
-                      backgroundColor: '#404040',
-                      borderRadius: 16,
-                      paddingVertical: 6,
-                      paddingHorizontal: 12,
-                      marginRight: 12
-                    }}
-                  >
-                    <Text style={{ color: 'white', fontSize: 12 }}>On Progress</Text>
-                  </View>
-
-                  <View
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 18,
-                      backgroundColor: 'white',
-                      justifyContent: 'center',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <Text style={{ fontSize: 18 }}>→</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
+          <View style={{ marginHorizontal: 8 }}>
+            {lastViewedResource ? (
+              <ContinueLearning theme={theme} lastViewedResource={lastViewedResource} />
+            ) : <WelcomeCard theme={theme} hobbyName={userData.hobbyName} />}
           </View>
 
-          <ExploreSection theme={theme} />
-        </View>
+          {/* Grid Container */}
+          <View style={styles.gridContainer}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>Explore Learning</Text>
 
-        <MotivationalQuote theme={theme} />
+            <View style={styles.gridRow}>
+              <CardComponent
+                card={LEARNING_CARDS[0]}
+                onPress={handleCardPress}
+                isActive={activeCardId === LEARNING_CARDS[0].id}
+                onLayout={measureCard}
+                position="topLeft"
+              />
+
+              <CardComponent
+                card={LEARNING_CARDS[1]}
+                onPress={handleCardPress}
+                isActive={activeCardId === LEARNING_CARDS[1].id}
+                onLayout={measureCard}
+                position="topRight"
+              />
+            </View>
+
+            <View style={styles.gridRow}>
+              <CardComponent
+                card={LEARNING_CARDS[2]}
+                onPress={handleCardPress}
+                isActive={activeCardId === LEARNING_CARDS[2].id}
+                onLayout={measureCard}
+                position="bottomLeft"
+              />
+
+              <CardComponent
+                card={LEARNING_CARDS[3]}
+                onPress={handleCardPress}
+                isActive={activeCardId === LEARNING_CARDS[3].id}
+                onLayout={measureCard}
+                position="bottomRight"
+              />
+            </View>
+          </View>
+        </Animated.View>
+
+        {activeCardId && (
+          <Animated.View style={[styles.backgroundOverlay, overlayStyle]}>
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={handleBackgroundPress}
+            >
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.75)' }]} />
+            </Pressable>
+
+            <ZoomedCard
+              card={LEARNING_CARDS.find(card => card.id === activeCardId)}
+              measurements={cardMeasurements[activeCardId]}
+              zoomProgress={zoomProgress}
+              onActionPress={handleBackgroundPress}
+            />
+          </Animated.View>
+        )}
       </ScrollView>
     </View>
   );
 }
+
+const ZoomedCard = ({ card, measurements, zoomProgress, onActionPress }) => {
+  const targetWidth = width * 0.9;
+  const targetHeight = height * 0.5;
+  const targetX = (width - targetWidth) / 2;
+  const targetY = (height - targetHeight) / 2;
+
+  // Determine the destination route based on card ID
+  const getDestinationRoute = (cardId) => {
+    switch (cardId) {
+      case 'practice':
+        return '/learning';
+      case 'learn':
+        return '/learning';
+      case 'progress':
+        return '/progress';
+      case 'community':
+        return '/community';
+      default:
+        return '/(tabs)';
+    }
+  };
+
+  // Handler for the call-to-action button
+  const handleActionPress = () => {
+    if (card && card.id) {
+      const route = getDestinationRoute(card.id);
+      router.push(route);
+    }
+  };
+
+  const zoomedCardStyle = useAnimatedStyle(() => {
+    if (!measurements) return {};
+
+    const cardX = interpolate(
+      zoomProgress.value,
+      [0, 1],
+      [measurements.x, targetX],
+      Extrapolate.CLAMP
+    );
+
+    const cardY = interpolate(
+      zoomProgress.value,
+      [0, 1],
+      [measurements.y, targetY],
+      Extrapolate.CLAMP
+    );
+
+    const cardWidth = interpolate(
+      zoomProgress.value,
+      [0, 1],
+      [measurements.width, targetWidth],
+      Extrapolate.CLAMP
+    );
+
+    const cardHeight = interpolate(
+      zoomProgress.value,
+      [0, 1],
+      [measurements.height, targetHeight],
+      Extrapolate.CLAMP
+    );
+
+    return {
+      position: 'absolute',
+      left: cardX,
+      top: cardY,
+      width: cardWidth,
+      height: cardHeight,
+      borderRadius: interpolate(zoomProgress.value, [0, 1], [16, 24], Extrapolate.CLAMP),
+      overflow: 'hidden',
+      zIndex: 20,
+    };
+  });
+
+  return (
+    <Animated.View style={zoomedCardStyle}>
+      {card && (
+        <ImageBackground
+          source={card.image}
+          style={styles.zoomedCardBackgroundImage}
+        >
+          <View style={[styles.zoomedCardOverlay, { backgroundColor: card.baseColor + 'DD' }]}>
+            <View style={styles.zoomedCardHeader}>
+              <Text style={styles.zoomedCardName}>{card.id.charAt(0).toUpperCase() + card.id.slice(1)}</Text>
+              <Text style={styles.zoomedCardTitle}>{card.title}</Text>
+              <Text style={styles.zoomedCardDescription}>{card.description}</Text>
+            </View>
+
+            <View style={styles.zoomedCardContent}>
+              <Text style={styles.zoomedCardText}>
+                Expand your knowledge and skills with our comprehensive resources.
+                Track your progress and connect with other learners.
+              </Text>
+
+              <TouchableOpacity
+                style={styles.zoomedCardButton}
+                onPress={handleActionPress}
+              >
+                <Text style={styles.zoomedCardButtonText}>Get Started</Text>
+                <Ionicons name="arrow-forward" size={18} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.zoomedCardIcons}>
+              <View style={styles.zoomedIconCircle}>
+                <Ionicons name={card.icon} size={24} color="white" />
+              </View>
+              {card.id === 'learn' && (
+                <>
+                  <View style={[styles.zoomedIconCircle, { marginLeft: 12 }]}>
+                    <Ionicons name="book-outline" size={24} color="white" />
+                  </View>
+                  <View style={[styles.zoomedIconCircle, { marginLeft: 12 }]}>
+                    <Ionicons name="school-outline" size={24} color="white" />
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+        </ImageBackground>
+      )}
+    </Animated.View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingTop: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  appTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginHorizontal: 10,
+    marginTop: 20,
+    marginBottom: 15,
+  },
+  gridContainer: {
+    padding: 10,
+  },
+  gridRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  backgroundOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+  },
+  zoomedCardBackgroundImage: {
+    width: '100%',
+    height: '100%',
+  },
+  zoomedCardOverlay: {
+    flex: 1,
+    padding: 24,
+  },
+  zoomedCardHeader: {
+    marginBottom: 20,
+  },
+  zoomedCardName: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    opacity: 0.9,
+    marginBottom: 6,
+    textTransform: 'uppercase',
+  },
+  zoomedCardTitle: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  zoomedCardDescription: {
+    color: 'white',
+    fontSize: 16,
+    opacity: 0.8,
+  },
+  zoomedCardContent: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  zoomedCardText: {
+    color: 'white',
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 20,
+  },
+  zoomedCardButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 30,
+    alignSelf: 'flex-start',
+  },
+  zoomedCardButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+    marginRight: 8,
+  },
+  zoomedCardIcons: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  zoomedIconCircle: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

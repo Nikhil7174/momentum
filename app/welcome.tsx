@@ -141,7 +141,6 @@ export default function WelcomeScreen() {
 
   // Load custom fonts
   const [fontsLoaded] = useFonts({
-    'ComicRelief-Regular': require('../assets/fonts/ComicRelief-Regular.ttf'),
     'Roboto-VariableFont': require('../assets/fonts/Roboto-VariableFont.ttf'),
   });
 
@@ -189,7 +188,6 @@ export default function WelcomeScreen() {
     );
   }, []);
 
-  // Hide splash screen once fonts are loaded
   useEffect(() => {
     async function hideSplashScreen() {
       if (fontsLoaded) {
@@ -250,7 +248,6 @@ export default function WelcomeScreen() {
     );
 
     setTimeout(() => {
-      // Use replace instead of push
       router.push('/onboarding/1');
     }, 100);
   };
@@ -290,7 +287,6 @@ export default function WelcomeScreen() {
     }, [])
   );
 
-  // If fonts aren't loaded yet, return null or a loading indicator
   if (!fontsLoaded) {
     return null;
   }
@@ -354,8 +350,8 @@ export default function WelcomeScreen() {
           >
             <AnimatedLinearGradient
               colors={gradientColors.value}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 0 }}
               style={[styles.button, styles.gradientButton]}
             >
               <Text style={[styles.buttonText]}>Get Started</Text>
@@ -431,14 +427,14 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     marginTop: 20,
     opacity: 0.8,
-    fontWeight: '100',
-    fontFamily: 'ComicRelief-Regular',
   },
   textLight: {
     color: '#FFFFFF',
+    fontWeight: '300'
   },
   textDark: {
     color: '#333333',
+    fontWeight: '100'
   },
   infoBox: {
     width: '100%',
