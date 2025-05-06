@@ -23,7 +23,6 @@ export default function TabLayout() {
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
             shadowColor: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)',
             shadowOffset: { width: 0, height: isDarkMode ? -2 : 2 },
@@ -37,13 +36,10 @@ export default function TabLayout() {
             marginBottom: 8,
             backgroundColor: isDarkMode ? theme.card : 'white',
             elevation: 10,
-            // Dark mode: light shadow from top and sides to create a glow effect
-            // Light mode: traditional shadow underneath
             shadowColor: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.25)',
             shadowOffset: { width: 0, height: isDarkMode ? -1 : 2 },
             shadowOpacity: isDarkMode ? 1 : 0.3,
             shadowRadius: isDarkMode ? 10 : 4,
-            // Add a more pronounced border in dark mode for extra definition
             borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
             borderWidth: isDarkMode ? 1 : 0,
             paddingBottom: 0,
