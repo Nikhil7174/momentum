@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, TouchableOpacity, StatusBar, ImageBackground, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Dimensions, TouchableOpacity, StatusBar, ImageBackground, BackHandler, LayoutRectangle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -21,60 +21,29 @@ import WelcomeCard from '@/components/home/WelcomeCard';
 import Header from '@/components/home/Header';
 import { useUserStats } from '@/context/UserStatsContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LEARNING_CARDS } from '@/constants/LearningCardDetails'
+
 const { width, height } = Dimensions.get('window');
 
-const LEARNING_CARDS = [
-  {
-    id: 'practice',
-    title: 'Practice Techniques',
-    description: 'Start learning',
-    icon: 'layers-outline',
-    baseColor: '#183685',
-    position: { x: 0, y: 0 },
-    floatOffset: 8,
-    image: require('../assets/images/practice.png')
-  },
-  {
-    id: 'learn',
-    title: 'Learning Resources',
-    description: 'Start learning',
-    icon: 'book-outline',
-    baseColor: '#372073',
-    position: { x: 0, y: 0 },
-    floatOffset: 10,
-    image: require('../assets/images/learning.png')
-  },
-  {
-    id: 'progress',
-    title: 'Track Progress',
-    description: 'View analytics',
-    icon: 'trending-up-outline',
-    baseColor: '#573718',
-    position: { x: 0, y: 0 },
-    floatOffset: 6,
-    image: require('../assets/images/progress.png')
-  },
-  {
-    id: 'community',
-    title: 'Community',
-    description: 'Join discussion',
-    icon: 'people-outline',
-    baseColor: '#82631a',
-    position: { x: 0, y: 0 },
-    floatOffset: 7,
-    image: require('../assets/images/community.png')
-  }
-];
+interface Measurement {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+type CardMeasurements = Record<string, Measurement>;
+
 
 export default function AnimatedHomeScreen() {
-  const [activeCardId, setActiveCardId] = useState(null);
-  const [cardMeasurements, setCardMeasurements] = useState({});
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [cardMeasurements, setCardMeasurements] = useState<CardMeasurements>({});
   const { userData, lastViewedResource } = useUserStats();
 
   const zoomProgress = useSharedValue(0);
   const backgroundOpacity = useSharedValue(0);
   const screenScale = useSharedValue(1);
-  const measureCard = (cardId, layout) => {
+  const measureCard = (cardId: string, layout: LayoutRectangle) => {
     setCardMeasurements(prev => ({
       ...prev,
       [cardId]: {
@@ -86,7 +55,7 @@ export default function AnimatedHomeScreen() {
     }));
   };
 
-  const handleCardPress = (cardId) => {
+  const handleCardPress = (cardId: string) => {
     if (activeCardId !== null) return;
 
     setActiveCardId(cardId);
@@ -219,7 +188,8 @@ export default function AnimatedHomeScreen() {
   );
 }
 
-const ZoomedCard = ({ card, measurements, zoomProgress, onActionPress }) => {
+//TODO #2 Fix type
+const ZoomedCard = ({ card, measurements, zoomProgress, onActionPress }: any) => {
 
   const statusBarHeight = StatusBar.currentHeight || 0;
   const headerHeight = 20;
@@ -231,7 +201,7 @@ const ZoomedCard = ({ card, measurements, zoomProgress, onActionPress }) => {
   const router = useRouter()
 
   // Determine the destination route based on card ID
-  const getDestinationRoute = (cardId) => {
+  const getDestinationRoute = (cardId: string) => {
     switch (cardId) {
       case 'practice':
         return '/learning';
