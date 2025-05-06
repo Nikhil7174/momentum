@@ -23,12 +23,15 @@ export default function OnboardingScreen() {
     const rootTheme = useTheme();
     const isDarkMode = rootTheme.dark;
 
-    const { updateUserData } = useUserStats();
-
     const [hobbyName, setHobbyName] = useState('');
     const [currentSkillLevel, setCurrentSkillLevel] = useState<string>('');
     const [desiredSkillLevel, setDesiredSkillLevel] = useState<string>('');
     const [timeCommitment, setTimeCommitment] = useState<string>('');
+    const { 
+        updateUserData,
+        fetchLearningPlan,
+        setUserDataUpdated 
+      } = useUserStats();
 
     const handleContinue = async () => {
         try {
@@ -43,12 +46,14 @@ export default function OnboardingScreen() {
                 case 3:
                     if (desiredSkillLevel) await updateUserData({desiredSkillLevel});
                     break;
-                case 4:
-                    if (timeCommitment) {
-                        await updateUserData({timeCommitment});
-                        await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
-                    }
-                    break;
+                    case 4:
+                        if (timeCommitment) {
+                          await updateUserData({ timeCommitment });
+                          await AsyncStorage.setItem(STORAGE_KEYS.onboardingCompleted, 'true');
+                          fetchLearningPlan();
+                          router.replace('/(tabs)');
+                        }
+                        break;
             }
 
             if (currentStep < TOTAL_ONBOARDING_STEPS) {
@@ -255,7 +260,13 @@ export default function OnboardingScreen() {
                 <View className="mb-6 mt-4">
                     <View className="flex-row items-center mb-2 mr-6">
                         {currentStep > 0 && (
-                            <TouchableOpacity onPress={() => router.push(currentStep === 1 ? `/(tabs)` : `/onboarding/${currentStep - 1}`)}>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    currentStep === 1
+                                        ? router.replace('/welcome')
+                                        : router.push(`/onboarding/${currentStep - 1}`)
+                                }
+                            >
                                 <AntDesign name="arrowleft" size={24} color={isDarkMode ? '#fff' : '#000'} />
                             </TouchableOpacity>
                         )}

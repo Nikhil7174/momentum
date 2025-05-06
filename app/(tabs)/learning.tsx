@@ -23,7 +23,6 @@ export default function LearningScreen() {
   const rootTheme = useTheme();
   const isDarkMode = rootTheme.dark;
   const theme = createTheme(isDarkMode);
-  console.log("isDarkMode", isDarkMode, theme.background)
   const router = useRouter();
 
   const { openResource } = useLocalSearchParams();
@@ -59,17 +58,6 @@ export default function LearningScreen() {
       userData.timeCommitment
     );
   };
-
-  useEffect(() => {
-    if (!isFetchingRef.current && isUserDataComplete() && (userDataUpdated || !learningPlan?.weeks?.length)) {
-      isFetchingRef.current = true;
-      
-      fetchLearningPlan().finally(() => {
-        isFetchingRef.current = false;
-        setUserDataUpdated(false);
-      });
-    }
-  }, [userDataUpdated, userData]);
 
   useEffect(() => {
     if (openResource) {
@@ -149,7 +137,7 @@ export default function LearningScreen() {
     );
   }
 
-  if (isLoadingPlan) {
+  if (isLoadingPlan || !learningPlan?.weeks?.length) {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
@@ -160,12 +148,15 @@ export default function LearningScreen() {
             style={{ width: 200, height: 200 }}
           />
           <Text className='font-semibold text-xl justify-center items-center text-center dark:text-white'>
-            Creating personalized learning plan for {userData.hobbyName} ...
+            {isLoadingPlan 
+              ? `Creating personalized learning plan for ${userData.hobbyName}...`
+              : 'Loading your learning plan...'
+            }
           </Text>
         </View>
       </SafeAreaView>
     );
-  }
+  }  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

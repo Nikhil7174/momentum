@@ -127,7 +127,13 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
       setIsLoadingPlan(true);
       setLastViewedResource(null);
 
-      const { hobbyName, currentSkillLevel, desiredSkillLevel, timeCommitment } = userData;
+      const [hobbyName, currentSkillLevel, desiredSkillLevel, timeCommitment] = await Promise.all([
+        AsyncStorage.getItem(STORAGE_KEYS.hobbyName),
+        AsyncStorage.getItem(STORAGE_KEYS.currentSkillLevel),
+        AsyncStorage.getItem(STORAGE_KEYS.desiredSkillLevel),
+        AsyncStorage.getItem(STORAGE_KEYS.timeCommitment),
+      ]);
+  
       if (!hobbyName || !currentSkillLevel || !desiredSkillLevel || !timeCommitment) {
         console.error('Missing required user data for learning plan');
         setIsLoadingPlan(false);
@@ -220,29 +226,27 @@ export function UserStatsProvider({ children }: { children: ReactNode }) {
   };
   
   const updateUserData = async (data: Partial<UserData>) => {
-    const updatedData = { ...userData, ...data };
-    setUserData(updatedData);
-    setUserDataUpdated(true);
-
+    // Update storage FIRST
     try {
       if (data.hobbyName !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.hobbyName, data.hobbyName);
       if (data.currentSkillLevel !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.currentSkillLevel, data.currentSkillLevel);
       if (data.desiredSkillLevel !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.desiredSkillLevel, data.desiredSkillLevel);
       if (data.timeCommitment !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.timeCommitment, data.timeCommitment);
       if (data.progress !== undefined) await AsyncStorage.setItem(STORAGE_KEYS.progress, data.progress.toString());
-      
-      // Remove stored plan if any user preferences changed.
-      if (
-        data.hobbyName !== undefined || 
-        data.currentSkillLevel !== undefined || 
-        data.desiredSkillLevel !== undefined || 
-        data.timeCommitment !== undefined
-      ) {
-        await AsyncStorage.removeItem(STORAGE_KEYS.learningPlan);
-      }
     } catch (error) {
       console.error('Failed to update user data:', error);
     }
+  
+    // Then update state
+    setUserData(prev => {
+      const newData = { ...prev, ...data };
+      // Remove stored plan if any key changed
+      if (data.hobbyName || data.currentSkillLevel || data.desiredSkillLevel || data.timeCommitment) {
+        AsyncStorage.removeItem(STORAGE_KEYS.learningPlan).catch(console.error);
+      }
+      return newData;
+    });
+    setUserDataUpdated(true);
   };
 
   return (

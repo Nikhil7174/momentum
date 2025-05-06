@@ -9,7 +9,6 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ theme }) => {
-  console.log("theme.isDarkMode", theme.isDarkMode)
   return (
     <View style={{ 
       flexDirection: 'row', 
